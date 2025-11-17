@@ -13,7 +13,7 @@ Dans cette section, vous devez créer trois machines virtuelles dans OpenStack a
 
 Une machine sera le *Control Plane* et deux autres seront des *Worker Nodes*.
 
-Afin de créer des machines avec 20Go d'espace disque, vous allez commencer par créer trois **Volumes** dans l'OpenStack avec l'image **Ubuntu Server 22.04.3 LTS - Docker Ready** comme **Volume Source**. Ensuite, vous allez créer trois machines avec 4 vCPU, 8 Go de RAM et avec les volumes précédemment créés comme sources de démarrage (**Boot Source**).
+Afin de créer des machines avec 20Go d'espace disque, vous allez commencer par créer trois **Volumes** dans l'OpenStack avec l'image **Ubuntu Server 24.04.1 LTS - Docker Ready** comme **Volume Source**. Ensuite, vous allez créer trois machines avec 4 vCPU, 8 Go de RAM et qui utilisent les volumes précédemment créés comme sources de démarrage (**Boot Source**).
 
 ------
 
@@ -24,7 +24,7 @@ Dans cette section, vous allez deployer un cluster Kubernetes avec l'outil RKE (
 #### SSH
 Avant de commencer le déploiement avec RKE, vous devez vous assurer que la machine **Control Plane** peut se connecter en **ssh** sur toutes les machines du cluster sans aucun mot de passe. 
 **Pour cela :**
--   Créez une paire de clés ssh **sans passphrase** sur le nœud Control Plane (commande `ssh-keygen`) 
+-   Créez une paire de clés ssh **sans passphrase** sur le nœud Control Plane (commande `ssh-keygen -t rsa`) 
 -   **Ajoutez** la clé publique (`.ssh/id_rsa.pub`) du **Control Plane** au fichier des clés autorisées (`.ssh/authorized_keys`) sur tous les nœuds (y compris sur le nœud Control Plane).
 	 - **Attention !** Conservez les clés déjà présentes dans `.ssh/authorized_keys` (sinon vous ne pourrez plus vous connecter aux nœuds).
 - Testez si le nœud **Control Plane** arrive à se connecter en ssh sur tous les nœuds (**y compris sur lui-même**)
@@ -39,7 +39,7 @@ Avant de commencer le déploiement avec RKE, vous devez vous assurer que la mach
 - **Redémarrez toutes les machines!**
 
 ### Déploiement de Kubernetes avec RKE (Depuis le noeud Control Plane)
-- Téléchargez la dernière version stable de RKE depuis le dépôt officiel [RKE](https://github.com/rancher/rke/releases/). 
+- Téléchargez la version `1.8.5` de RKE depuis le dépôt officiel [RKE](https://github.com/rancher/rke/releases/). 
 	- **Attention !** Vous devez choisir une version stable (release) et non une pre-release !
 - Rendez le fichier téléchargé exécutable (`chmod +x <NOM_DU_FICHIER>`), renommez le fichier en `rke` et lancez la configuration
 	```bash
@@ -60,15 +60,15 @@ Avant de commencer le déploiement avec RKE, vous devez vous assurer que la mach
 		$ ./rke remove
 		$ ./rke up
 		```
-- Après avoir déployé le cluster avec **RKE**, un fichier `kube_config_cluster.yaml` est créé, ce fichier contient les détails de connexion et d'authentification pour interagir avec le cluster déployé.
+- Après avoir déployé le cluster avec **RKE**, un fichier `kube_config_cluster.yaml` est créé. Ce fichier contient les informations de connexion et d'authentification pour interagir avec le cluster déployé.
 
 ### Installation et configuration de kubectl
 Afin de manipuler les objets de votre cluster dans ce TP, vous utiliserez **kubectl**.
 **kubectl** un outil de ligne de commande permettant de communiquer avec le Control Plane d'un cluster Kubernetes via l'API Kubernetes.
 
-- Téléchargez et installez la version `1.32.3` de **kubectl**
+- Téléchargez et installez la version `1.32.6` de **kubectl**
   ```bash
-  $ curl -LO "https://dl.k8s.io/release/v1.32.3/bin/linux/amd64/kubectl"
+  $ curl -LO "https://dl.k8s.io/release/v1.32.6/bin/linux/amd64/kubectl"
   $ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
   ```
 - Copiez la configuration de `kubectl` crée par **RKE**
@@ -87,7 +87,7 @@ Afin de manipuler les objets de votre cluster dans ce TP, vous utiliserez **kube
 
 ## Utilisation du cluster
 Dans cette section, vous allez déployer quelques objets Kubernetes sur votre cluster. 
-Pour cela, vous allez créer des fichiers **yml** contenant la description des objets K8s. Ensuite vous allez créer ces objets avec la commande :
+Pour cela, vous allez créer des fichiers **yaml** contenant la description des objets K8s. Ensuite vous allez créer ces objets avec la commande :
 ```bash
 $ kubectl apply -f nom-du-fichier.yaml
 ```
@@ -131,6 +131,7 @@ Ce fichier décrit un Pod qui a les caractéristiques suivantes :
     - Utilisez l'option `-o wide` pour voir plus d'informations sur les objets K8s
     - Sur quel nœud le Pod a-t-il été lancé ?
     - Vérifiez l'accessibilité du Pod en interrogeant le port 8080 de tous les nœuds. Que pouvez-vous conclure ?
+      - Veillez à bien distinguer la réponse du Pod `nginx-pod` et celle du serveur proxy de l'université.
   
 - **Visualisez les logs du pod**
 	```bash
@@ -250,16 +251,17 @@ spec:
     ```
     - Quelles adresses sont affichées dans la liste des ENDPOINTS? À quoi correspondent ces adresses?
 
-- **Vérifiez que le déploiement est bien accessible depuis n'importe quel nœud du cluster**
+- **Vérifiez l'accessibilité du service depuis tous les nœuds du cluster**
     ```bash
     $ curl -I 127.0.0.1:[node_port]
     ```
+    - Que pouvez-vous conclure?
 
 - **Vérifiez si le service est accessible depuis le Pod `nginx-pod` créé précédemment**
     - Le service doit être accessible en utilisant son nom `nginx-service` comme un nom DNS depuis le **Pod** `nginx-pod` 
     - Vous pouvez faire une requête HTTP avec `curl` sur `http://nginx-service` depuis le **Pod** `nginx-pod`
 	  - Pour exécuter une commande dans le **Pod** `nginx-pod`, vous pouvez utiliser `kubectl exec`
-    - Quelle commande avez-vous utilisée pour effectuer la requête HTTP avec `curl ` à partir du **Pod** `nginx-pod`? Que pouvez-vous conclure?
+    - Quelle commande avez-vous utilisée pour effectuer la requête HTTP avec `curl` à partir du **Pod** `nginx-pod`? Que pouvez-vous conclure?
 
 ### Rolling Updates
 Imaginez que vous avez une nouvelle version de l'application à déployer et vous voulez le faire sans aucune interruption de service.
@@ -314,9 +316,9 @@ Pour déployer la nouvelle version de l'application, vous allez mettre à jour l
 - **Mettez-à-jour le déploiement et suivez le processus de déploiement**
     ```bash
     $ kubectl get services # Pour récupérer le NodePort
-    $ watch -n 1 curl -I 127.0.0.1:[node_port]
+    $ watch -n 1 curl -I 127.0.0.1:[node_port] # Envoyer une requête curl toutes les secondes
     ```
-    - Comme nous avons ralenti le processus de déploiement, vous pouvez suivre le déploiement de la nouvelle version en temps réel.
+    - Comme nous avons ralenti le processus de déploiement, vous pouvez suivre le déploiement de la nouvelle version en temps réel (Surveillez la version du serveur nginx retournée dans les en-têtes).
 
 Comme vous pouvez le constater, la mise à jour s'est déroulée de manière progressive et sans aucune interruption de service.
 
@@ -332,7 +334,8 @@ Kubernetes vous donne la possibilité de revenir en arrière avec le mécanisme 
 
 - **Suivez le processus de Rollback**
     ```bash
-    $ watch -n 1 curl -I 127.0.0.1:[node_port]
+    $ kubectl get services # Pour récupérer le NodePort
+    $ watch -n 1 curl -I 127.0.0.1:[node_port] # Envoyer une requête curl toutes les secondes
     ```
 
 - Que pouvez-vous conclure?
@@ -344,7 +347,7 @@ Pour cela, vous devez récupérer l'historique du déploiement et choisir la ré
     ```bash
     $ kubectl rollout history deployment nginx-deployment
     ```
-    - Affichez les détails de la révision 2 du **Deployment**. Quelle commande utiliserez-vous ?
+    - Affichez les détails des révisions 2 et 3 du **Deployment**. Quelles commandes utiliserez-vous ?
     
 Vous pouvez revenir à une révision particulière du déploiement en utilisant l'option `--to-revision` de la commande `kubectl rollout undo`.
 
@@ -352,14 +355,15 @@ Vous pouvez revenir à une révision particulière du déploiement en utilisant 
     - Quelle commande avez-vous utilisé ?
     
 - **Récupérez l’historique du déploiement avec la commande vue précédemment**
-    - Expliquez comment les numéros de révision ont changé une fois que vous êtes revenu à la version 2 du déploiement.
+    - Expliquez comment les numéros de révision ont changé une fois que vous êtes revenu à la version 2 du déploiement. 
+      - Pour répondre à cette question, analysez les détails des toutes les révisions de **Deployment** et comparez-les aux détails des révisions 2 et 3 affichées précédemment.
 
 ### Volumes
 Certaines applications ont besoin d'un stockage permanent. 
 Dans cette section, vous allez manipuler le mécanisme des volumes persistants proposé par Kubernetes.
 
 La création d'un volume et son attribution à un **Pod** se font en plusieurs étapes.
-Tout d'abord, un objet `Persistent Volume` doit être créé. Cette tâche est généralement effectuée par l'administrateur du cluster.
+Tout d'abord, un objet `PersistentVolume` doit être créé. Cette tâche est généralement effectuée par l'administrateur du cluster.
 Dans le cadre de ce TP, vous allez créer un volume persistant de type `hostPath` (un répertoire monté sur les nœuds workers) avec la capacité de stockage de 200Mi.
 
 Créez le fichier `pv.yaml`
@@ -452,7 +456,7 @@ spec:
   volumes:
     - name: mongodb-data
       persistentVolumeClaim:
-        claimName: task-pv-claim
+        claimName: pvc
 ```
 
 - **Créez cet objet dans le cluster**
@@ -542,6 +546,7 @@ spec:
 
 - Modifiez la description du **Pod** afin que le répertoire `/secret` soit monté en tant que volume du secret et que la variable d'environement `SECRET_USERNAME` contienne la valeur `username` du secret.
     - N'hésitez pas à utiliser la [documentation officielle](https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/).
+    
 - Quelle sera la description du Pod avec des secrets?
 
 - **Créez le Pod dans le cluster**
@@ -610,6 +615,7 @@ spec:
   $ curl 127.0.0.1:8081
   ```
   - Que pouvez-vous constater? Expliquez le résultat.
+    - Pour expliquer le résultat, analysez la commande exécutée par `initContainer`.
 
 
 ### Sondes de Liveness et Readiness
@@ -648,7 +654,7 @@ spec:
 	```bash
 	$ kubectl exec -it liveness-pod -- rm -r /usr/share/nginx
 	```
-	- Après avoir exécuté cette commande, la sonde Liveness du **Pod** échouera car le serveur `nginx` ne peut plus trouver la page d'index et répond par une erreur 404.
+	- Après avoir exécuté cette commande, la sonde Liveness du **Pod** échouera car le serveur `nginx` ne pourra plus trouver la page d'index et répondra par une erreur 404.
 
 - **Surveillez les événements relatifs au Pod et le comportement du Pod `liveness-pod`**
   ```bash
@@ -814,7 +820,7 @@ L'application sera composée des deux services :
 	- Il sera accessible de l'exterieur via un **Ingress**
 
 ### Service Redis
-Afin de créer le service Redis décrit dans l'architecture de déploiement, vous devez créer les objets K8s suivants :
+Afin de créer le service Redis décrit dans l'architecture de déploiement, vous devez créer les objets K8s suivants :c
 - **PersistantVolume**
 	- Créez un volume persistant avec le nom `redis-pv` , de type `hostPath`,  avec une capacité de stockage de `500Mi` , le mode d'accès `ReadWriteOnce` et un point de montage `/mnt/redis`. Vous pouvez vous inspirer du volume persistant créé précédemment et de la documentation officielle de Kubernetes.
 
@@ -995,7 +1001,12 @@ $ ./rke remove
     - N'oubliez pas d'ajouter l'option `--cri-socket` à la commande `kubeadm join` pour spécifier le CRI
     - Quelle commande avez-vous utilisée sur chaque nœud Worker pour rejoindre le cluster ?
 
-- Configurez l'outil `kubectl` comme expliqué dans le résultat de la commande `kubeadm init`
+- Configurez l'outil `kubectl` comme expliqué dans le résultat de la commande `kubeadm init`.
+
+- Activez le module `br_netfilter` sur **toutes les machines**, sinon le CNI `flannel` risque de ne pas fonctionner.
+  ```bash
+  sudo modprobe br_netfilter
+  ```
 
 - Déployez le CNI (Container Network Interface) `flannel`, comme expliqué dans
   - https://github.com/flannel-io/flannel
