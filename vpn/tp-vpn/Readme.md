@@ -1,11 +1,17 @@
 # TP VPN/IPsec
-Au cours de ce TP, vous allez interconnecter deux réseaux avec différentes solutions VPN. Vous allez commencer par la mise en place d’un tunnel non sécurisé avec **GRE**. Ensuite, vous le protégerez avec **IPsec** en gérant les clés de chiffrement et d’authentification manuellement. Puis, vous allez configurer un tunnel **IPsec** avec **IKE** en utilisant **strongSwan**. Vous configurerez également un **OpenVPN** avec une autorité de certification et des certificats. S'il vous reste du temps, vous mettrez en place un VPN **Wireguard**.
+Au cours de ce TP, vous interconnecterez deux réseaux avec de différentes solutions VPN. 
+
+Vous commencerez par la mise en place d’un tunnel non sécurisé avec **GRE**. 
+Ensuite, vous le protégerez avec **IPsec** en gérant les clés de chiffrement et d’authentification manuellement. 
+Puis, vous configurerez un tunnel **IPsec** avec **IKE** en utilisant **strongSwan**. 
+Vous configurerez également un **OpenVPN** avec une autorité de certification et des certificats. 
+S'il vous reste du temps, vous mettrez en place un VPN **Wireguard**.
 
 ## Rendu
-Afin d'être évalué, vous devez rédiger un rapport dans lequel vous mettez **toutes les commandes exécutées** sur toutes les machines, **tous les fichiers de configuration** créés et les **réponses aux questions** posées.
+Afin d'être évalué, vous devez rédiger un rapport dans lequel vous incluez **toutes les commandes exécutées** sur toutes les machines, **tous les fichiers de configuration** créés et les **réponses aux questions** posées.
 
 ## 1 - Creation de l’infrastructure
-Pour réaliser ce TP, vous allez utiliser la plateforme OpenStack de l'université.
+Pour réaliser ce TP, vous utiliserez la plateforme OpenStack de l'université.
 
 ### L'architecture de déploiement
 ![Architecture de déploiement](./vpn_archi.png)
@@ -15,31 +21,34 @@ L'architecture de déploiement est composée des éléments suivants :
 - 2 réseaux privés A et B qui seront des réseaux OpenStack
 - 1 réseau public qui sera le réseau par défaut (***vlanXXXX***) déjà présent dans l'Openstack
 
-**Créez les éléments suivants :**
+**Créez les éléments suivants:**
 - Une clé SSH qui sera utilisée uniquement pour ce TP
-- 2 réseaux OpenStack
-    - 1 réseau nommé ***network-a-{numéro de groupe}*** pour le **Network A** avec le sous-réseau ***172.18.{Numéro de groupe}.0/24***, sans Gateway et avec DHCP activé
-    - 1 réseau nommé ***network-b-{numéro de groupe}*** pour le **Network B** avec le sous-réseau ***172.19.{Numéro de groupe}.0/24***, sans Gateway et avec DHCP activé
+- 2 réseaux OpenStack (`Réseau -> Réseaux -> Créer un réseau`)
+    - 1 réseau nommé ***network-a-{numéro de groupe}*** pour le **Network A** avec le sous-réseau ***172.18.{Numéro de groupe}.0/24***, la passerelle désactivé et le DHCP activé
+    - 1 réseau nommé ***network-b-{numéro de groupe}*** pour le **Network B** avec le sous-réseau ***172.19.{Numéro de groupe}.0/24***, la passerelle désactivé et le DHCP activé
     - **Dans la configuration DHCP des deux sous-réseaux**, vous pouvez choisir librement le pool d'attribution d’adresses de DHCP
-    - **Attention!** Vous devrez également **supprimer les serveurs DNS mis par défaut** dans la configuration DHCP des sous-réseaux!
+
 - 5 machines virtuelles avec 
-    - 1 vCPU, 2 GB de RAM, l’image Ubuntu 22.04.3
+    - 1 vCPU, 2 GB de RAM, l’image `Ubuntu Server 24.04.1 LTS`
     - Interfaces réseau faisant partie des réseaux respectant l'architecture de déploiement
         - **Attention!** Pour éviter les problèmes de DNS, lors de la création des VMs routeurs, sélectionnez le réseau par défaut (***vlanXXXX***) comme première interface
-    - La clé SSH créée précédemment
+    - Clé SSH créée précédemment
     - Nommez les machines en suivant la même logique que pour nommer les réseaux
-    - Sur les deux routeurs, installez le noyau Linux `linux-image-5.19.0-50-generic` avec `apt` et redémarrez-les. Vérifiez avec `uname -r` que la  version `5.19.0-50-generic` du noyau est utilisée.
-    
+
 **Désactivez dans l’OpenStack la sécurité des ports sur tous les ports des réseaux A et B**
-- *Network -> Networks -> {Nom du réseau} -> Ports -> Edit Port -> Décochez Port Security*
+- `Réseau -> Réseaux -> {Nom du réseau} -> Ports -> Éditer le port -> Décochez Sécurité de port`
 - Si vous ne faites pas cela, Openstack bloquera tout le trafic avec des adresses IP qui ne sont pas incluses dans les sous-réseaux précédemment configurés
 
-**Configurez le Router 1 et le Router 2 comme passerelles par défaut sur les hôtes des deux réseaux**
-- Pour vous connecter aux hôtes, placez la clé privée SSH précédemment créée sur le Router 1 et le Router 2 et connectez-vous aux hôtes en passant par les routeurs
+**Configurez le Router 1 et le Router 2 comme passerelles par défaut sur les hôtes des deux réseaux.**
+- Pour vous connecter aux hôtes, placez la clé privée SSH créée précédemment sur le Router 1 et le Router 2 et connectez-vous aux hôtes en passant par les routeurs
+- Utilisez la commande `ip route add default`
 
-**Activez le routage et configurez NAT sur les deux routeurs afin que les hôtes des deux réseaux puissent communiquer avec l'extérieur**
+**Activez le routage et configurez le NAT avec iptables sur les deux routeurs afin que les hôtes des deux réseaux puissent communiquer avec l'extérieur.**
+- Vous pouvez vous inspirer du tutoriel suivant:
+    - https://www.revsys.com/writings/quicktips/nat.html
+    - Veuillez sélectionner les interfaces de routeur appropriées
 
-**Vérifiez que les hôtes des deux réseaux peuvent communiquer avec l'extérieur, mais ne peuvent pas communiquer entre eux**
+**Vérifiez que les hôtes des deux réseaux peuvent communiquer avec l'extérieur, mais ne peuvent pas communiquer entre eux.**
 <!---
 - Si vous rencontrez des problèmes avec la résolution DNS, supprimez les entrées de la table de routage pour les adresses `10.10.10.10` et `10.10.10.11` sur tous les machines.
 --->
