@@ -33,15 +33,15 @@ L'architecture de déploiement est composée des éléments suivants :
     - Interfaces réseau faisant partie des réseaux respectant l'architecture de déploiement
         - **Attention!** Pour éviter les problèmes de DNS, lors de la création des VMs routeurs, sélectionnez le réseau par défaut (***vlanXXXX***) comme première interface
     - Clé SSH créée précédemment
-    - Nommez les machines en suivant la même logique que pour nommer les réseaux
+    - Nommez les machines en suivant la même logique que pour nommer les réseaux.
 
 **Désactivez dans l’OpenStack la sécurité des ports sur tous les ports des réseaux A et B**
 - `Réseau -> Réseaux -> {Nom du réseau} -> Ports -> Éditer le port -> Décochez Sécurité de port`
-- Si vous ne faites pas cela, Openstack bloquera tout le trafic avec des adresses IP qui ne sont pas incluses dans les sous-réseaux précédemment configurés
+- Si vous ne faites pas cela, Openstack bloquera tout le trafic avec des adresses IP qui ne sont pas incluses dans les sous-réseaux précédemment configurés.
 
 **Configurez le Router 1 et le Router 2 comme passerelles par défaut sur les hôtes des deux réseaux.**
-- Pour vous connecter aux hôtes, placez la clé privée SSH créée précédemment sur le Router 1 et le Router 2 et connectez-vous aux hôtes en passant par les routeurs
-- Utilisez la commande `ip route add default`
+- Pour vous connecter aux hôtes, placez la clé privée SSH créée précédemment sur le Router 1 et le Router 2 et connectez-vous aux hôtes en passant par les routeurs.
+- Utilisez la commande `ip route add default`.
 
 **Activez le routage et configurez le NAT avec iptables sur les deux routeurs afin que les hôtes des deux réseaux puissent communiquer avec l'extérieur.**
 - Vous pouvez vous inspirer du tutoriel suivant:
@@ -60,7 +60,7 @@ L'architecture de déploiement est composée des éléments suivants :
     - Utilisez `gre1` comme nom d'interface pour le tunnel.
 
 **Mettez à jour les règles de routage sur les routeurs afin que les machines du réseau A puissent communiquer avec les machines du réseau B via le tunnel GRE.**
-- - Utilisez la commande `ip route add`
+- Utilisez la commande `ip route add`.
 
 **Visualisez avec Wireshark via SSH les paquets échangés entre le Router 1 et le Router 2. Que pouvez-vous conclure?**
 - Vous pouvez utiliser le Wireshark via SSH avec la commande suivante:
@@ -70,8 +70,8 @@ L'architecture de déploiement est composée des éléments suivants :
 
 ## 3 - Protection du tunnel GRE avec IPsec - Gestion des clés manuelle
 **Mettez en place l’IPsec entre le Router 1 et le Router 2 en mode transport et avec le mécanisme de sécurité ESP avec chiffrement et authentification.**
-- Utilisez le framework IP XFRM pour configurer l’IPsec
-- Générez et configurez les clés manuellement
+- Utilisez le framework IP XFRM pour configurer l’IPsec.
+- Générez et configurez les clés manuellement.
 - Vous pouvez vous inspirer de la page suivante:
     - https://serverfault.com/questions/995091/ipsec-tunnel-between-2-remote-host
     - **Attention!** Dans ce tutoriel, seul le chiffrement est configuré. Pour configurer l'authentification, ajoutez `auth sha256 <CLÉ>` aux commandes de création des states.
@@ -88,15 +88,14 @@ La configuration manuelle des clés de chiffrement convient aux fins de démonst
 Dans cette section, vous allez déployer un **VPN IPsec en mode tunnel avec IKE** en utilisant **strongSwan**.
 
 **Supprimez le tunnel GRE et l’IPSec entre les routeurs 1 et 2.**
-- Pour ce faire, utilisez les commandes `ip xfrm ... flush` et `ip tunnel del`
+- Pour ce faire, utilisez les commandes `ip xfrm ... flush` et `ip tunnel del`.
     - Pour supprimer IPSec, vous devrez *flush* à la fois les *states* et les *policies*.
 
 **Configurez IPsec en mode tunnel entre Router 1 et 2 avec strongSwan.** 
-- Utilisez le IKEv2 comme mécanisme d'échange des clés et le Pre-shared key (PSK) pour l’authentification
-- Vous pouvez vous inspirer du tutoriel suivant
+- Utilisez le IKEv2 comme mécanisme d'échange des clés et le Pre-shared key (PSK) pour l’authentification.
+- Vous pouvez vous inspirer du tutoriel suivant:
     - https://www.tecmint.com/setup-ipsec-vpn-with-strongswan-on-debian-ubuntu/
     - Le nom du service strongSwan est `strongswan-starter`.
-    <!-- - https://blog.ruanbekker.com/blog/2018/02/11/setup-a-site-to-site-ipsec-vpn-with-strongswan-and-preshared-key-authentication/-->
 
 **Vérifiez que les hôtes des deux réseaux peuvent communiquer entre eux.**
 - Étant donné qu'IPsec est en mode tunnel, NAT doit être désactivé sur les routeurs 1 et 2 afin que les hôtes des deux réseaux puissent communiquer entre eux.
@@ -116,33 +115,33 @@ Dans cette section, vous allez configurer un VPN **OpenVPN** avec le Router 1 co
     - Vérifiez avec `ipsec status` que toutes les associations de sécurité ont été supprimées.
 
 **Configurez le serveur OpenVPN sur le Router 1**
-- Le serveur doit être configuré en **mode TUN**, utiliser la topologie réseau **Subnet**, utiliser le protocole **UDP** pour la communication et les certificats pour l'authentification
+- Le serveur doit être configuré en **mode TUN**, utiliser la topologie réseau **Subnet**, utiliser le protocole **UDP** pour la communication et les certificats pour l'authentification.
 
-- Commencez par installer les packages `openvpn` et `easy-rsa`
+- Commencez par installer les packages `openvpn` et `easy-rsa`.
 
 - Créez une autorité de certification sur le Router 1, vous pouvez vous inspirer du tutoriel suivant (jusqu'à l'étape 3) :
     - https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-a-certificate-authority-ca-on-ubuntu-20-04
 
 - Pour configurer la partie serveur et générer les clés et certificats pour les clients, vous pouvez vous inspirer du tutoriel suivant (les étapes 3,4,5,6,7,10):
     - https://www.digitalocean.com/community/tutorials/how-to-set-up-and-configure-an-openvpn-server-on-ubuntu-20-04
-    - Comme toutes les actions sont effectuées sur le Routeur 1, vous n'avez pas besoin de transmettre des clés, des demandes de signature et des certificats entre les machines
-    - Tout d'abord, créez une clé privée et un certificat pour le serveur
-        - N'obliez pas de copier les certificats `server.crt` et `ca.crt` dans `/etc/openvpn/server`
-    - Ensuite, générez des clés et des certificats pour deux clients (Router 2 et Host EXT)
-    - Finalement, configurez et démarrez le serveur OpenVPN
-        - Ne modifiez pas l'utilisateur et le groupe dans la configuration du serveur OpenVPN
+    - Comme toutes les actions sont effectuées sur le Routeur 1, vous n'avez pas besoin de transmettre des clés, des demandes de signature et des certificats entre les machines.
+    - Tout d'abord, créez une clé privée et un certificat pour le serveur.
+        - N'obliez pas de copier les certificats `server.crt` et `ca.crt` dans `/etc/openvpn/server`.
+    - Ensuite, générez des clés et des certificats pour deux clients (Router 2 et Host EXT).
+    - Finalement, configurez et démarrez le serveur OpenVPN.
+        - Ne modifiez pas l'utilisateur et le groupe dans la configuration du serveur OpenVPN.
 
 **Configurez le serveur OpenVPN pour qu’il annonce la route du réseau A à ses clients.**
 - Pour cela, vous devez configurer une ***push "route"*** dans **server.conf**
     - Vous pouvez vous inspirer de la section "Including multiple machines on the server side when using a routed VPN (dev tun)" de ce tutoriel:
         - https://openvpn.net/community-docs/expanding-the-scope-of-the-vpn-to-include-additional-machines-on-either-the-client-or-server-subnet.html
-    - N'oubliez pas de redémarrer le serveur OpenVPN
+    - N'oubliez pas de redémarrer le serveur OpenVPN.
 
 **Configurez le Router 2 et le Host EXT comme clients OpenVPN**
-- Copiez **ta.key**, **ca.crt**, les clés et les certificats des clients sur le Router 2 et le Host EXT dans `/etc/openvpn/`
+- Copiez **ta.key**, **ca.crt**, les clés et les certificats des clients sur le Router 2 et le Host EXT dans `/etc/openvpn/`.
 - Configurez les clients en mode démon. Vous pouvez vous inspirer de la partie "Configuration client simple" de ce tutoriel :
     - https://guide.ubuntu-fr.org/server/openvpn.html
-    - Dans la configuration des clients, rajoutez la même configuration d'encryption et d'authentification que sur le serveur
+    - Dans la configuration des clients, rajoutez la même configuration d'encryption et d'authentification que sur le serveur:
         ```
         cipher AES-256-GCM
         auth SHA256
@@ -156,7 +155,7 @@ Dans cette section, vous allez configurer un VPN **OpenVPN** avec le Router 1 co
 - Vous pouvez vous inspirer de la section “Including multiple machines on the client side when using a routed VPN (dev tun)” de ce tutoriel: 
     - https://openvpn.net/community-docs/expanding-the-scope-of-the-vpn-to-include-additional-machines-on-either-the-client-or-server-subnet.html
     - Toutes les actions doivent être effectuées sur le serveur OpenVPN (Router 1).
-    - N'oubliez pas de redémarrer le serveur OpenVPN
+    - N'oubliez pas de redémarrer le serveur OpenVPN.
 
 **Vérifiez que le Router 1 et le Host EXT sont capables de communiquer avec les hôtes du réseau B.**
 
@@ -168,13 +167,14 @@ Dans cette section, vous allez configurer un VPN **OpenVPN** avec le Router 1 co
 Dans cette section, vous allez mettre en place un VPN Wireguard entre les routeurs 1 et 2.
 
 **Supprimez le VPN OpenVPN.**
-- Pour ce faire, arrêtez les services OpenVPN sur toutes les machines
+- Pour ce faire, arrêtez les services OpenVPN sur toutes les machines.
 
 **Configurez un VPN Wireguard entre deux routeurs**
 - Vous pouvez-vous inspirer de la documentation officielle de WireGuard https://www.wireguard.com/#conceptual-overview et de l’article https://www.ericlight.com/wireguard-part-one-installation.html
-    - Générez une paire de clés publique/privée sur chaque routeur avec la commande `wg`
-    - Configurez et activez les interfaces `wg0`
-    - Vous pouvez utiliser la commande `wg show` pour afficher la configuration actuelle et les informations runtime des interfaces WireGuard
+    - Générez une paire de clés publique/privée sur chaque routeur avec la commande `wg`.
+    - Configurez et activez les interfaces `wg0`.
+    - Vous pouvez utiliser la commande `wg show` pour afficher la configuration actuelle et les informations runtime des interfaces WireGuard.
+    - N'oubliez pas de configurer `AllowedIPs` pour spécifier quel routeur est responsable de quel réseau.
 
 **Vérifiez que les hôtes des deux réseaux peuvent communiquer via VPN Wireguard.**
 
