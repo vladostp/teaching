@@ -111,7 +111,8 @@ Dans cette section, vous allez déployer un **VPN IPsec en mode tunnel avec IKE*
 Dans cette section, vous allez configurer un VPN **OpenVPN** avec le Router 1 comme serveur et le Router 2 et le Host EXT comme clients.
 
 **Supprimez IPSec strongSwan entre les routeurs.**
-- Pour ce faire, restaurez le contenu du fichier `/etc/ipsec.conf` depuis `/etc/ipsec.conf.orig` et redémarrez `ipsec`. Si vous n'avez pas sauvegardé la configuration IPsec par défaut, supprimez le fichier `/etc/ipsec.conf` et redémarrez `ipsec`. 
+- Pour ce faire, restaurez le contenu du fichier `/etc/ipsec.conf` depuis `/etc/ipsec.conf.orig` et redémarrez `ipsec`. 
+    - Si vous n'avez pas sauvegardé la configuration IPsec par défaut, supprimez le fichier `/etc/ipsec.conf` et redémarrez `ipsec`. 
     - Vérifiez avec `ipsec status` que toutes les associations de sécurité ont été supprimées.
 
 **Configurez le serveur OpenVPN sur le Router 1**
@@ -138,20 +139,22 @@ Dans cette section, vous allez configurer un VPN **OpenVPN** avec le Router 1 co
     - N'oubliez pas de redémarrer le serveur OpenVPN
 
 **Configurez le Router 2 et le Host EXT comme clients OpenVPN**
-- Mettez **ta.key**, **ca.crt**, les clés et les certificats des clients sur le Router 2 et le Host EXT
+- Copiez **ta.key**, **ca.crt**, les clés et les certificats des clients sur le Router 2 et le Host EXT dans `/etc/openvpn/`
 - Configurez les clients en mode démon. Vous pouvez vous inspirer de la partie "Configuration client simple" de ce tutoriel :
     - https://guide.ubuntu-fr.org/server/openvpn.html
-- Dans la configuration du client mettez la même configuration d'encryption et d'authentification que sur le serveur
-    ```
-    cipher AES-256-GCM
-    auth SHA256
-    ```
+    - Dans la configuration des clients, rajoutez la même configuration d'encryption et d'authentification que sur le serveur
+        ```
+        cipher AES-256-GCM
+        auth SHA256
+        tls-crypt ta.key
+        ```
+    - N'oubliez pas de modifier les noms de la clé et du certificat dans la configuration des clients si nécessaire.
 
 **Vérifiez que le Router 2 et Host EXT sont capables de communiquer avec les hôtes du réseau A.**
 
 **Configurez le serveur OpenVPN pour que le réseau B soit accessible par tous les clients OpenVPN via le Router 2.**
 - Vous pouvez vous inspirer de la section “Including multiple machines on the client side when using a routed VPN (dev tun)” de ce tutoriel: 
-    - https://openvpn.net/community-resources/how-to/
+    - https://openvpn.net/community-docs/expanding-the-scope-of-the-vpn-to-include-additional-machines-on-either-the-client-or-server-subnet.html
     - Toutes les actions doivent être effectuées sur le serveur OpenVPN (Router 1).
     - N'oubliez pas de redémarrer le serveur OpenVPN
 
