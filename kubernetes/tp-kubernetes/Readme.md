@@ -359,7 +359,7 @@ Vous pouvez revenir à une révision particulière du déploiement en utilisant 
       - Pour répondre à cette question, analysez les détails des toutes les révisions de **Deployment** et comparez-les aux détails des révisions 2 et 3 affichées précédemment.
 
 ### Volumes
-Certaines applications ont besoin d'un stockage permanent. 
+Certaines applications ont besoin d'un stockage persistant.
 Dans cette section, vous allez manipuler le mécanisme des volumes persistants proposé par Kubernetes.
 
 La création d'un volume et son attribution à un **Pod** se font en plusieurs étapes.
