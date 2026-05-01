@@ -449,6 +449,7 @@ Vous devez maintenant indiquer à `Filebeat` quels logs il doit collecter.
 
 Pour ce faire, vous avez deux options: 
 - Modifier manuellement le fichier de configuration `Filebeat` et spécifier les fichiers logs à surveiller.
+
 - Utiliser les modules fournis avec `Filebeat` 
   - `Filebeat` est livré avec plusieurs modules vous permettant de specifier les sources des logs
 
@@ -516,7 +517,7 @@ sudo curl --cacert /etc/elasticsearch/certs/http_ca.crt -u elastic 'https://loca
 
 - `Elasticsearch` reçoit-il des logs?
 
-Assurez-vous d'avoir configuré `Filebeat` sur toutes les machines.
+**Assurez-vous d'avoir installé et configuré `Filebeat` sur toutes les machines.**
 
 ##### Configuration des agents collecteurs sur Windows - Bonus
 Installez et configurez le `Winlogbeat` sur la machine `Windows`. 
@@ -527,9 +528,13 @@ Le `Winlogbeat` doit collecter et envoyer tous les `Event Logs` à `logstash`.
 > **Rappel**: le lien pour accéder à l’instance `Kibana` depuis votre natigateur Web est `http://ADRESSE_IP_DE_LA_MACHINE_ELASTIC:8080/`
 
 ##### Visualisation des logs
-Visualisez les logs dans l’interface `Kibana` (`Kibana->Discover`).
+Visualisez les logs dans l’interface `Kibana` (`Analytics->Discover`).
 
+Analysez le contenu des messages et les champs disponibles.
+
+<!---
 Avant de pouvoir afficher les logs dans `Discover`, créez un data view avec l'index pattern `filebeat-*`.
+-->
 
 Recherchez tous les logs provenant de la machine `nginx-server`.
 
@@ -541,7 +546,7 @@ Recherchez tous les logs provenant de la machine `nginx-server`.
 Vous pouvez importer les dashboards dans Kibana en exécutant la commande suivante **sur la machine `elastic`**. 
 ```
 ELASTIC_PASSWORD="MOT_DE_PASSE"
-KIBANA_HOST=ADRESSE_IP_DE_LA_MACHINE_ELASTIC
+KIBANA_HOST="ADRESSE_IP_DE_LA_MACHINE_ELASTIC"
 
 sudo filebeat setup --dashboards -E setup.kibana.password="$ELASTIC_PASSWORD" -E setup.kibana.host=$KIBANA_HOST:8080 setup -E setup.kibana.username=elastic
 ```
