@@ -579,7 +579,7 @@ Dans cette section, vous allez déployer et configurer la solution de centralisa
 ![Architecture de Graylog](./graylog_arch.jpg)
 
 #### Installation
-Vous allez commencer par installer `Elasticsearch`, `Mongodb` et `Graylog-server` sur la machine `graylog`. 
+Vous allez commencer par installer `Mongodb`, `Data Node` et `Graylog-server` sur la machine `graylog`. 
 
 Ensuite, vous allez installer un agent collector `Filebeat` ou `Winlogbeat` et un agent de gestion de configuration `Graylog Collector` sur chaque machine.
 
@@ -597,7 +597,6 @@ curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
    sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
    --dearmor
 
-
 echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
 
 sudo apt update
@@ -609,14 +608,16 @@ Activez le démarrage automatique de `MongoDB` lors du démarrage du système et
 sudo systemctl daemon-reload
 sudo systemctl enable mongod.service
 sudo systemctl restart mongod.service
-sudo systemctl --type=service --state=active | grep mongod
+sudo systemctl status mongod
 ```
 
 ##### Installation et configuration de Data node
 `Graylog` stocke les logs dans un Data node. 
 
 Auparavant, le Data node pouvait être `Elasticsearch` ou `OpenSearch`, qui sont des moteurs de recherche open source.
+
 Cependant, à partir de Graylog 7.0, l'utilisation d'`Elasticsearch` comme moteur de recherche est devenu obsolète. La prise en charge d'`Elasticsearch` sera entièrement supprimée dans Graylog 8.0. 
+
 Il est donc conseillé d'utiliser `OpenSearch` comme Data node.
 Graylog fournit un composant appelé `Graylog Data Node` qui est basé sur `OpenSearch` et permet de simplifier sa gestion.
 
@@ -629,7 +630,7 @@ sudo dpkg -i graylog-7.0-repository_latest.deb
 sudo apt-get update
 sudo apt-get install graylog-datanode
 ```
-
+<!---
 Assurez-vous que le paramètre Linux `vm.max_map_count` est défini sur au moins `262144`. Pour vérifier la valeur actuelle :
 ```
 cat /proc/sys/vm/max_map_count
@@ -641,6 +642,7 @@ echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.d/99-graylog-datanode.c
 sudo sysctl --system
 cat /proc/sys/vm/max_map_count
 ```
+--->
 
 Créez votre mot de passe secret. Il s'agit d'une chaîne de caractères sécurisée, générée aléatoirement, utilisée pour chiffrer les données sensibles au sein du système.
 ```
@@ -672,9 +674,9 @@ Vérifiez avec les commandes `systemctl` et `journalctl` que `graylog-datanode` 
 
 - Quelles commandes avez-vous utilisé pour faire cela?
 
-Vérifiez que `Data Node` est fonctionnel en envoyant une requête HTTP `GET` à l'API REST avec la commande `curl` sur le port `9200`.
+Vérifiez que `Data Node` est fonctionnel en envoyant une requête HTTP `GET` à l'API REST avec la commande `curl` sur le port `8999`.
 ```
-curl -X GET "localhost:9200"
+curl -X GET "localhost:8999"
 ```
 
 - Quel est le résultat de la commande `curl`?
@@ -753,13 +755,19 @@ Vérifiez avec les commandes `systemctl` et `journalctl` que `graylog-server` a 
 
 - Quelles commandes avez-vous utilisé pour faire cela?
 
-Attendez une minute et vérifiez si l’interface Web `Graylog` fonctionne correctement.
+
+Récupérez le mot de passe qui sera affiché dans les logs du serveur Graylog et accédez à l'interface web pour poursuivre la configuration de Graylog.
 
 L’interface web `Graylog` doit être disponible à l’adresse `http://ADRESSE_IP_DE_LA_MACHINE_GRAYLOG/`.
 
-Vous pouvez vous authentifier sur l'interface web `Graylog` avec l'utilisateur `admin` et le mot de passe créé précédemment.
+Vous pouvez vous authentifier sur l'interface de configuration `Graylog` avec l'utilisateur `admin` et le mot de passe récupéré dans les logs.
 
 - L'interface Web Graylog fonctionne-t-elle ? Quelle page voyez-vous après la connexion ?
+
+Générez l'autorité de certification et les certificats nécessaires en suivant le guide de l'interface de configuration.
+
+- Avez-vous réussi à configurer Graylog?
+
 
 #### Configuration de Graylog Sidecar sur Linux
 Dans cette section, vous ne configurerez pas les collecteurs de logs manuellement comme nous l'avons fait pour `Elastic Stack`. 
