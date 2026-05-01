@@ -12,10 +12,10 @@ Vous finirez par installer et configurer les trois solutions de centralisation d
 Dans cette section, vous devez créer 5 machines virtuelles dans OpenStack.
 
 Ces machines doivent avoir les noms d'hôte et les caractéristiques suivants :
-- `[num]-nginx-server` (Ubuntu Server 22.04.3, 2vCPU, 4GB RAM, 10GB d’espace disque)
-- `[num]-graylog` (Ubuntu Server 22.04.3, 2vCPU, 8GB RAM, 20GB d’espace disque)
-- `[num]-elastic` (Ubuntu Server 22.04.3, 4vCPU, 16GB RAM, 20GB d’espace disque)
-- `[num]-loki` (**Ubuntu Server 22.04.3 - Docker Ready**, 2vCPU, 4GB RAM, 10GB d’espace disque)
+- `[num]-nginx-server` (Ubuntu Server 24.04.1, 2vCPU, 4GB RAM, 10GB d’espace disque)
+- `[num]-graylog` (Ubuntu Server 24.04.1, 2vCPU, 8GB RAM, 20GB d’espace disque)
+- `[num]-elastic` (Ubuntu Server 24.04.1, 4vCPU, 16GB RAM, 20GB d’espace disque)
+- `[num]-loki` (**Ubuntu Server 24.04.1 - Docker Ready**, 2vCPU, 4GB RAM, 10GB d’espace disque)
 - `[num]-windows-web-server` (Windows 10, 2vCPU, 8GB RAM, 50GB d’espace disque) (BONUS)
   - Pour la machine Windows, créez un volume séparé avec 50 Go de stockage et l'image `Windows 10` comme source de volume.
   - Ensuite, créez l'instance Windows avec le volume créé précédemment comme source de démarrage.
@@ -35,7 +35,8 @@ Vérifiez si le port `80` est bien ouvert dans `OpenStack` et testez si le serve
 ![L’architecture des logs de l’espace utilisateur](./linux_logs_arch.jpg)
 
 ### Rsyslog
-`Rsyslog` est une implémentation du protocole `syslog` et est fourni par défaut sur la plupart des systèmes Linux modernes. `Syslog` est utilisé comme standard pour produire, transmettre et collecter des logs.
+`Rsyslog` est une implémentation du protocole `syslog` et est fourni par défaut sur la plupart des systèmes Linux modernes. 
+`Syslog` est utilisé comme standard pour produire, transmettre et collecter des logs.
 
 `Rsyslog` récupère les logs de l’espace noyau et du journal de systemd et les enregistre dans des fichiers.
 
@@ -255,7 +256,9 @@ Dans cette section, vous allez installer et configurer `Elasticsearch`, `Kibana`
 Installez `Elasticsearch` avec les commandes suivantes
 ```
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+
 echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+
 sudo apt update
 sudo apt install elasticsearch
 ```
@@ -410,6 +413,7 @@ Vous allez **commencer par la machine `elastic`**, car sur cette machine vous de
 Sur toutes les machines **sauf `elastic`** vous devez ajouter les repos `Elastic` dans le gestionnaire des packages `apt`.
 ```
 wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+
 echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
 sudo apt update
 ```
@@ -484,7 +488,9 @@ Le template d'index sera automatiquement appliqué lors de la création d'un nou
 Pour créer des template d'index et des pipelines de traitement, exécutez les commandes suivantes **sur la machine `elastic`** :
 ```
 ELASTIC_PASSWORD="MOT_DE_PASSE"
+
 sudo filebeat setup --index-management -E output.elasticsearch.password="$ELASTIC_PASSWORD" -E output.elasticsearch.username=elastic -E 'output.elasticsearch.ssl.certificate_authorities="/etc/elasticsearch/certs/http_ca.crt"' -E 'output.elasticsearch.hosts=["https://localhost:9200"]' -E 'output.logstash.enabled=false'
+
 sudo filebeat setup --pipelines --modules system,nginx --force-enable-module-filesets -E output.elasticsearch.password="$ELASTIC_PASSWORD" -E output.elasticsearch.username=elastic -E 'output.elasticsearch.ssl.certificate_authorities="/etc/elasticsearch/certs/http_ca.crt"' -E 'output.elasticsearch.hosts=["https://localhost:9200"]' -E 'output.logstash.enabled=false'
 ```
 - Vous devez remplacer le `MOT_DE_PASSE` par le mot de passe généré lors de l'installation `elasticsearch`.
@@ -536,6 +542,7 @@ Vous pouvez importer les dashboards dans Kibana en exécutant la commande suivan
 ```
 ELASTIC_PASSWORD="MOT_DE_PASSE"
 KIBANA_HOST=ADRESSE_IP_DE_LA_MACHINE_ELASTIC
+
 sudo filebeat setup --dashboards -E setup.kibana.password="$ELASTIC_PASSWORD" -E setup.kibana.host=$KIBANA_HOST:8080 setup -E setup.kibana.username=elastic
 ```
 - Vous devez remplacer le `MOT_DE_PASSE` par le mot de passe généré lors de l'installation `elasticsearch` et `ADRESSE_IP_DE_LA_MACHINE_ELASTIC` par l'adresse IP de la machine `elastic`.
@@ -581,8 +588,13 @@ sudo apt install -y apt-transport-https uuid-runtime pwgen gnupg curl
 ##### Installation de MongoDB
 Installez la base de données MongoDB utilisée pour stocker la configuration et les paramètres de `Graylog`
 ```
-curl -fsSL https://pgp.mongodb.com/server-6.0.asc | sudo gpg -o /usr/share/keyrings/mongodb-server-6.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list
+curl -fsSL https://www.mongodb.org/static/pgp/server-8.0.asc | \
+   sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg \
+   --dearmor
+
+
+echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] https://repo.mongodb.org/apt/ubuntu noble/mongodb-org/8.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
+
 sudo apt update
 sudo apt install -y mongodb-org
 ```
@@ -598,39 +610,64 @@ sudo systemctl --type=service --state=active | grep mongod
 ##### Installation et configuration de Data node
 `Graylog` stocke les logs dans un Data node. 
 
-Le Data node peut être `Elasticsearch` ou `OpenSearch` qui sont des moteurs de recherche open source. 
+Auparavant, le Data node pouvait être `Elasticsearch` ou `OpenSearch`, qui sont des moteurs de recherche open source.
+Cependant, à partir de Graylog 7.0, l'utilisation d'`Elasticsearch` comme moteur de recherche est devenu obsolète. La prise en charge d'`Elasticsearch` sera entièrement supprimée dans Graylog 8.0. 
+Il est donc conseillé d'utiliser `OpenSearch` comme Data node.
+Graylog fournit un composant appelé `Graylog Data Node` qui est basé sur `OpenSearch` et permet de simplifier sa gestion.
 
-Dans cette section, vous allez configurer `Elasticsearch` en tant que Data node.
+Dans cette section, vous allez installer et configurer `Graylog Data Node` en tant que Data node.
 
-`Graylog` ne peut être utilisé qu'avec `Elasticsearch 7.10.2`, vous allez donc installer cette version en exécutant les commandes suivantes :
+Installez le package `Data Node` en exécutant les commandes suivantes :
 ```
-wget -q https://artifacts.elastic.co/GPG-KEY-elasticsearch -O myKey
-sudo apt-key add myKey
-echo "deb https://artifacts.elastic.co/packages/oss-7.x/apt stable main" | sudo tee -a /etc/apt/sources.list.d/elastic-7.x.list
-sudo apt update && sudo apt install -y elasticsearch-oss
-```
-
-Configurez Elasticseach pour une utilisation avec Graylog en modifiant `cluster.name` et en ajoutant la ligne `action.auto_create_index: false` à la fin du fichier de configuration `/etc/elasticsearch/elasticsearch.yml`.
-```
-cluster.name: graylog
-…
-action.auto_create_index: false
+wget https://packages.graylog2.org/repo/packages/graylog-7.0-repository_latest.deb
+sudo dpkg -i graylog-7.0-repository_latest.deb
+sudo apt-get update
+sudo apt-get install graylog-datanode
 ```
 
-Démarrez et configurez le service `Elasticsearch` pour qu'il démarre automatiquement à chaque démarrage du système d'exploitation. 
+Assurez-vous que le paramètre Linux `vm.max_map_count` est défini sur au moins `262144`. Pour vérifier la valeur actuelle :
+```
+cat /proc/sys/vm/max_map_count
+```
 
-Activez le démarrage automatique et rédemarrez le service `elasticsearch`.
+Pour augmenter la valeur :
+```
+echo 'vm.max_map_count=262144' | sudo tee -a /etc/sysctl.d/99-graylog-datanode.conf
+sudo sysctl --system
+cat /proc/sys/vm/max_map_count
+```
+
+Créez votre mot de passe secret. Il s'agit d'une chaîne de caractères sécurisée, générée aléatoirement, utilisée pour chiffrer les données sensibles au sein du système.
+```
+openssl rand -hex 32
+```
+
+Ajoutez la valeur `password_secret` au fichier de configuration du Data Node (`/etc/graylog/datanode/datanode.conf`). 
+- Notez que vous devrez ajouter cette même valeur au fichier de configuration du serveur Graylog ultérieurement, car il est essentiel que cette valeur soit identique pour le nœud Graylog.
+
+Assurez-vous que la mémoire allouée au tas (heap) soit configurée à la moitié de la mémoire système. 
+- Pour ce faire, ajoutez la propriété de configuration suivante à votre fichier de configuration du Data Node (`/etc/graylog/datanode/datanode.conf`). 
+```
+opensearch_heap = 4g
+```
+
+Configurez la chaîne de connexion MongoDB dans le fichier de configuration du Data Node (`/etc/graylog/datanode/datanode.conf`).
+```
+mongodb_uri = mongodb://localhost:27017/graylog
+```
+
+Activez le démarrage automatique et rédemarrez le service `graylog-datanode`.
 ``` 
 sudo systemctl daemon-reload
-sudo systemctl enable elasticsearch.service
-sudo systemctl restart elasticsearch.service
+sudo systemctl enable graylog-datanode.service
+sudo systemctl start graylog-datanode
 ```
 
-Vérifiez avec les commandes `systemctl` et `journalctl` que `elasticsearch` a démarré sans erreur.
+Vérifiez avec les commandes `systemctl` et `journalctl` que `graylog-datanode` a démarré sans erreur.
 
 - Quelles commandes avez-vous utilisé pour faire cela?
 
-Vérifiez que `Elasticsearch` est fonctionnel en envoyant une requête HTTP `GET` à l'API REST avec la commande `curl` sur le port `9200`.
+Vérifiez que `Data Node` est fonctionnel en envoyant une requête HTTP `GET` à l'API REST avec la commande `curl` sur le port `9200`.
 ```
 curl -X GET "localhost:9200"
 ```
@@ -640,21 +677,16 @@ curl -X GET "localhost:9200"
 ##### Installation et configuration de Graylog
 `Graylog server` est un serveur de collecte et de visualisation des logs qui est le composant principal de la solution `Graylog`. 
 
-`Graylog server` stocke les données de configuration dans `MongoDB` et utilize `Elasticsearch` comme Data node pour stocker les logs.
+`Graylog server` stocke les données de configuration dans `MongoDB` et utilize `Graylog Data Node` pour stocker les logs.
 
-Installez le version gratuite de `Graylog Server`.
+Installez le version gratuite (Open) de `Graylog Server`.
 ```
-wget https://packages.graylog2.org/repo/packages/graylog-5.0-repository_latest.deb
-sudo dpkg -i graylog-5.0-repository_latest.deb
-sudo apt update && sudo apt install -y graylog-server 
+sudo apt-get install graylog-server
 ```
 
 Pour pouvoir démarrer le serveur, vous devez au moins configurer les valeurs de `password_secret` et `root_password_sha2` dans le fichier de configuration du serveur Graylog `/etc/graylog/server/server.conf`.
 
-Le `password_secret` est utilisé pour le chiffrement de certaines données dans `MongoDB` (mots des passe utilisateur) et peut être généré avec la commande suivante:
-```
-pwgen -N 1 -s 96
-```
+Le `password_secret` a été généré lors de la configuration du `Graylog Data Node`.
 
 Le `root_password_sha2` est le hash du mot de passe de l’utilisateur root (`admin` par défaut).
 
@@ -748,9 +780,10 @@ Sinon, vous trouverez des instructions pour installer `Filebeat` dans la section
 ##### Installation de Graylog Sidecar
 Installez le `Graylog Sidecar` sur chaque machine avec les commandes :
 ```
-wget https://packages.graylog2.org/repo/packages/graylog-sidecar-repository_1-5_all.deb
-sudo dpkg -i graylog-sidecar-repository_1-5_all.deb
-sudo apt-get update && sudo apt-get install graylog-sidecar
+wget https://downloads.graylog.org/repo/packages/graylog-sidecar-repository_1-6_all.deb
+sudo dpkg -i graylog-sidecar-repository_1-6_all.deb
+sudo apt-get update
+sudo apt-get install graylog-sidecar
 ```
 
 Pour que `Graylog Sidecar` puisse contacter l’API REST du serveur `Graylog`, vous devez générer un token accès pour le `Graylog Sidecar`. 
