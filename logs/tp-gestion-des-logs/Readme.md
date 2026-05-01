@@ -768,6 +768,7 @@ Générez l'autorité de certification et les certificats nécessaires en suivan
 
 - Avez-vous réussi à configurer Graylog?
 
+Authentifiez-vous sur l'interface `Graylog` avec l'utilisateur `admin` et le mot de passe créé précédemment.
 
 #### Configuration de Graylog Sidecar sur Linux
 Dans cette section, vous ne configurerez pas les collecteurs de logs manuellement comme nous l'avons fait pour `Elastic Stack`. 
