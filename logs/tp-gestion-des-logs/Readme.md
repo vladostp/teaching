@@ -762,13 +762,19 @@ L’interface web `Graylog` doit être disponible à l’adresse `http://ADRESSE
 
 Vous pouvez vous authentifier sur l'interface de configuration `Graylog` avec l'utilisateur `admin` et le mot de passe récupéré dans les logs.
 
-- L'interface Web Graylog fonctionne-t-elle ? Quelle page voyez-vous après la connexion ?
+- L'interface de configuration Graylog fonctionne-t-elle ? Quelle page voyez-vous après la connexion ?
 
 Générez l'autorité de certification et les certificats nécessaires en suivant le guide de l'interface de configuration.
 
 - Avez-vous réussi à configurer Graylog?
 
 Authentifiez-vous sur l'interface `Graylog` avec l'utilisateur `admin` et le mot de passe créé précédemment.
+
+- L'interface Graylog fonctionne-t-elle ? Quelle page voyez-vous après la connexion ?
+
+Si vous voyez une erreur 503 dans votre navigateur Web, essayez de redémarrer le proxy nginx.
+
+Les logs du serveur Graylog sont disponibles dans `/var/log/graylog-server/server.log`.
 
 #### Configuration de Graylog Sidecar sur Linux
 Dans cette section, vous ne configurerez pas les collecteurs de logs manuellement comme nous l'avons fait pour `Elastic Stack`. 
