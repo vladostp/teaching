@@ -1172,12 +1172,6 @@ Explorez la page `Explore` de `Grafana`.
 - Quelle requête `LogQL` utiliseriez-vous pour afficher toutes les logs provenant des fichiers `/var/log/syslog` de toutes les machines?
 - Quelle requête `LogQL` utiliseriez-vous pour afficher les logs contenant le message `error` proventant de la machine `graylog`?
 
-#### Importation de Dashboards
-Explorez l'interface Grafana et trouvez un moyen d'importer le Dashboard suivant https://grafana.com/grafana/dashboards/13639-logs-app/
-
-- Avez-vous réussi ? Comment avez-vous fait ?
-- Que contient le Dashboard importé ?
-
 #### Conclusion
 Dans cette section, vous avez installé et configuré la solution de centralisation des logs `Grafana Loki`. 
 
