@@ -755,14 +755,13 @@ Vérifiez avec les commandes `systemctl` et `journalctl` que `graylog-server` a 
 
 - Quelles commandes avez-vous utilisé pour faire cela?
 
-
-Récupérez le mot de passe qui sera affiché dans les logs du serveur Graylog et accédez à l'interface web pour poursuivre la configuration de Graylog.
+Sauvegardez le mot de passe affiché dans les logs du serveur Graylog et accédez à l'interface web pour poursuivre la configuration de Graylog.
 
 L’interface web `Graylog` doit être disponible à l’adresse `http://ADRESSE_IP_DE_LA_MACHINE_GRAYLOG/`.
 
 Vous pouvez vous authentifier sur l'interface de configuration `Graylog` avec l'utilisateur `admin` et le mot de passe récupéré dans les logs.
 
-- L'interface de configuration Graylog fonctionne-t-elle ? Quelle page voyez-vous après la connexion ?
+- L'interface de configuration Graylog fonctionne-t-elle ? Quelle page s'affiche après la connexion ?
 
 Générez l'autorité de certification et les certificats nécessaires en suivant le guide de l'interface de configuration.
 
@@ -774,7 +773,8 @@ Authentifiez-vous sur l'interface `Graylog` avec l'utilisateur `admin` et le mot
 
 Si vous voyez une erreur 503 dans votre navigateur Web, essayez de redémarrer le proxy nginx.
 
-Les logs du serveur Graylog sont disponibles dans `/var/log/graylog-server/server.log`.
+Si le serveur Graylog ne fonctionne pas, analysez ses logs disponibles dans `/var/log/graylog-server/server.log`.
+
 
 #### Configuration de Graylog Sidecar sur Linux
 Dans cette section, vous ne configurerez pas les collecteurs de logs manuellement comme nous l'avons fait pour `Elastic Stack`. 
@@ -810,7 +810,8 @@ Pour que `Graylog Sidecar` puisse contacter l’API REST du serveur `Graylog`, v
 
 Vous pouvez le faire via l’interface web `Graylog` (`System -> Sidecars -> Create or reuse a token for the graylog-sidecar user`). 
 
-Donnez un nom à votre token et cliquez sur `Create Token`. Vous n'avez besoin que d'un seul token pour toutes les machines de ce TP.
+Donnez un nom à votre token et cliquez sur `Create Token`. 
+Vous n'avez besoin que d'un seul token pour toutes les machines de ce TP.
 
 Ajoutez le token et l’adresse de l’API `Graylog` dans le fichier de configuration `/etc/graylog/sidecar/sidecar.yml` sur chanque machine.
 ```
@@ -850,6 +851,9 @@ Configurez une entrée de type `Beats`, nommez l’entrée et laissez tous les a
 - Quel protocole de sécurité est disponible pour l'entrée de type Beats?
 - L'authentification est-elle configurable pour ce type d'entrée?
 
+Une fois l'Input créé, vous devez le configurer.
+- Pour cela, au niveau de l'Input, cliquez sur `Set-up Input -> Create Stream -> Donnez un nom au Stream -> Next -> Start Input`.
+
 ##### Configuration des sources
 Pour envoyer des logs au serveur `Graylog`, vous allez créer et attribuer la configuration des sources de logs via l'interface web `Graylog`. 
 
@@ -857,7 +861,7 @@ Cette configuration sera récupérée par `Graylog Sidecar` de chaque machine.
 
 Ensuite, `Graylog Sidecar` lancera une instance de `Filebeat` avec cette configuration sur chaque machine. 
 
-En conséquence, les logs seront envoyés par `Filebeat` lancé sur chaque machine au serveur `Graylog`.
+Par conséquent, les logs seront envoyés par `Filebeat` lancé sur chaque machine au serveur `Graylog`.
 
 Pour commencer, vous devez créer une configuration `Filebeat` dans l’interface web Graylog dans `System -> Sidecars -> Configuration -> Create Configuration`.
 
