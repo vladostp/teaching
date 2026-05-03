@@ -952,7 +952,7 @@ Jouez avec l'interface de recherche `Graylog` pour comprendre son fonctionnement
 - Quelle requête utilisez-vous pour trouver tous les messages contenant le champ `source_ip`?
 
 Vous pouvez trouver plus d'informations sur la syntaxe des requêtes ici: 
-- https://go2docs.graylog.org/5-0/making_sense_of_your_log_data/writing_search_queries.html?Highlight=query%20language
+- https://go2docs.graylog.org/current/making_sense_of_your_log_data/search_syntax_reference.htm
 
 ##### Creation d’un dashboard - BONUS
 Dans cette section, vous allez créer un dashboard qui affichera certaines statistiques du serveur nginx.
@@ -973,15 +973,11 @@ Un `index set` peut etre vu comme une configuration de rétention, de partitionn
 
 Dans cette section, vous allez configurer la rotation et la période de rétention de l’index set principal dans (`System -> Indices -> Default index set -> Edit Index Set`).
 
-Pour configurer la rotation de l’index set, vous devrez modifier les paramètres dans la section `Index Rotation Configuration`.
+Pour configurer la rotation de l’index set, vous devrez modifier les paramètres dans la section `Rotation & Retention`.
 
-Configurez la stratégie de rotation `Index Time` pour la fréquence de rotation toutes les 12 heures.
+Configurez la rotation et rétention pour une durée de rétention de 12 mois.
 
-- Que mettez-vous dans le champ `Rotation period`?
-
-Configurez la période de rétention dans la section `Index Retention Configuration` pour une rétention des logs pendant 12 mois.
-
-- Combien d'indices faut-il conserver pour avoir la période de rétention des logs de 12 mois?
+- Que mettez-vous dans les champs `Max. days in storage` et `Min. days in storage`?
 
 #### Conclusion
 Dans cette section, vous avez installé, configuré et manipulé le `Graylog` avec `Sidecar`. 
@@ -990,7 +986,7 @@ Ayant un temps très limité, même si vous en avez fait beaucoup, vous n'avez p
 
 Vous pouvez consulter la documentation officielle de `Graylog` et d'essayer d'aller plus loin (`Alerts`, `Streams`, `Users`, `Groups`, `Roles`, `Content Packs`).
 
-Pour un déploiement en production, il faudra au moins penser à sécuriser les entrées, passer l’API et l’interface Web à `HTTPS` et créer un cluster `Elasticsearch`. 
+Pour un déploiement en production, il faudra au moins penser à sécuriser les entrées, passer l’API et l’interface Web à `HTTPS` et créer un cluster `Graylog Data Node`. 
 
 Vous pouvez également déployer plusieurs instances du serveur `Graylog` et de les placer derrière un `load balancer`.
 
