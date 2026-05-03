@@ -1001,7 +1001,7 @@ Et si vous automatisez le déploiement des agents collecteurs et de `Graylog Sid
 ### Grafana Loki (PLG Stack)
 `Grafana Loki` est une solution d'agrégation de logs simple, légère et facile à utiliser.
 
-La principale différence avec les solutions vues précédemment est que `Grafana Loki` n'utilise pas `Elasticsearch` pour stocker les logs.
+La principale différence avec les solutions vues précédemment est que `Grafana Loki` n'utilise pas `Elasticsearch`/`Opensearch`  pour stocker les logs.
 
 `Grafana Loki` indexe uniquement les métadonnées (n'indexe pas le contenu des logs) et nécessite donc moins de ressources. 
 
@@ -1029,48 +1029,28 @@ docker volume create grafana
 ##### Grafana Loki
 `Grafana Loki` est le composant principal de la `Stack PLG` responsable de l'agrégation et du stockage des logs.
 
-Avant de lancer le conteneur `Loki`, créez le fichier de configuration `loki-config.yaml` avec le contenu suivant:
+- Créez un répertoire nommé `loki`. Définissez `loki` comme répertoire de travail actuel:
 ```
-auth_enabled: false
-
-server:
- http_listen_port: 3100
- grpc_listen_port: 9096
-
-common:
- path_prefix: /loki
- storage:
-   filesystem:
-     chunks_directory: /loki/chunks
-     rules_directory: /loki/rules
- replication_factor: 1
- ring:
-   instance_addr: 127.0.0.1
-   kvstore:
-     store: inmemory
-
-schema_config:
- configs:
-   - from: 2020-10-24
-     store: boltdb-shipper
-     object_store: filesystem
-     schema: v11
-     index:
-       prefix: index_
-       period: 24h
+mkdir loki
+cd loki
 ```
 
-Lancez `Loki` dans un conteneur Docker avec la commande suivante:
+- Téléchargez le fichier de configuration `loki-config.yaml`
 ```
-docker run -d --name loki -v $(pwd)/loki-config.yaml:/mnt/config/loki-config.yaml -v loki:/loki -p 3100:3100 grafana/loki:2.7.2 -config.file=/mnt/config/loki-config.yaml
+wget https://raw.githubusercontent.com/grafana/loki/v3.7.0/cmd/loki/loki-local-config.yaml -O loki-config.yaml
 ```
 
-Vérifiez que le conteneur `Loki` a été bien démarré avec
+- Lancez `Loki` dans un conteneur Docker avec la commande suivante:
+```
+docker run --name loki -d -v $(pwd):/mnt/config -v loki:/tmp/loki -p 3100:3100 grafana/loki:3.7.0 -config.file=/mnt/config/loki-config.yaml
+```
+
+- Vérifiez que le conteneur `Loki` a été bien démarré avec
 ```
 docker ps
 ```
 
-Vérifiez que `Loki` a démarré correcrement et sans erreurs en consultant ses logs
+- Vérifiez que `Loki` a démarré correcrement et sans erreurs en consultant ses logs
 ```
 docker logs loki
 ```
@@ -1087,7 +1067,7 @@ GF_SECURITY_ADMIN_PASSWORD=admin
 
 Lancez `Grafana` dans un conteneur Docker avec la commande suivante:
 ```
-docker run -d --name grafana -e GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER -e GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD -v grafana:/var/lib/grafana -p 80:3000 grafana/grafana:10.2.4
+docker run -d --name grafana -e GF_SECURITY_ADMIN_USER=$GF_SECURITY_ADMIN_USER -e GF_SECURITY_ADMIN_PASSWORD=$GF_SECURITY_ADMIN_PASSWORD -v grafana:/var/lib/grafana -p 8080:3000 grafana/grafana:13.0.1
 ```
 
 Vérifiez que le conteneur `Grafana` a été bien démarré avec
@@ -1095,7 +1075,7 @@ Vérifiez que le conteneur `Grafana` a été bien démarré avec
 docker ps
 ```
 
-Après le démarrage de `Grafana`, son interface Web doit être disponible sur `http://ADRESSE_IP_DE_LA_MACHINE_LOKI/`.
+Après le démarrage de `Grafana`, son interface Web doit être disponible sur `http://ADRESSE_IP_DE_LA_MACHINE_LOKI:8080/`.
 
 Authentifiez-vous avec les informations d'identification mises dans les variables d'environnement précédemment.
 
