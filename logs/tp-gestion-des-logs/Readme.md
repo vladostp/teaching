@@ -288,6 +288,7 @@ sudo curl --cacert /etc/elasticsearch/certs/http_ca.crt -u elastic https://local
 Installez, démarrez `Kibana` et activez le démarrage automatique au démarrage du système.
 ```
 sudo apt install kibana
+
 sudo systemctl daemon-reload
 sudo systemctl start kibana
 sudo systemctl enable kibana
@@ -751,7 +752,7 @@ sudo systemctl enable graylog-server.service
 sudo systemctl start graylog-server.service
 ```
 
-Vérifiez avec les commandes `systemctl` et `journalctl` que `graylog-server` a démarré sans erreur.
+Vérifiez avec les commandes `systemctl`, `journalctl` et en consultant le contenu du fichier `/var/log/graylog-server/server.log` que `graylog-server` a démarré sans erreur.
 
 - Quelles commandes avez-vous utilisé pour faire cela?
 
@@ -774,7 +775,6 @@ Authentifiez-vous sur l'interface `Graylog` avec l'utilisateur `admin` et le mot
 Si vous voyez une erreur 503 dans votre navigateur Web, essayez de redémarrer le proxy nginx.
 
 Si le serveur Graylog ne fonctionne pas, analysez ses logs disponibles dans `/var/log/graylog-server/server.log`.
-
 
 #### Configuration de Graylog Sidecar sur Linux
 Dans cette section, vous ne configurerez pas les collecteurs de logs manuellement comme nous l'avons fait pour `Elastic Stack`. 
@@ -1042,7 +1042,7 @@ wget https://raw.githubusercontent.com/grafana/loki/v3.7.0/cmd/loki/loki-local-c
 
 - Lancez `Loki` dans un conteneur Docker avec la commande suivante:
 ```
-docker run --name loki -d -v $(pwd):/mnt/config -v loki:/tmp/loki -p 3100:3100 grafana/loki:3.7.0 -config.file=/mnt/config/loki-config.yaml
+docker run --name loki -d -v $(pwd):/mnt/config -p 3100:3100 grafana/loki:3.7.0 -config.file=/mnt/config/loki-config.yaml
 ```
 
 - Vérifiez que le conteneur `Loki` a été bien démarré avec
