@@ -536,3 +536,5 @@ Pour ce faire:
         - Analysez les métadonnées de cette photo
             - Pour cela, vous pouvez utiliser un outil en ligne d'analyse des métadonnées d'image
     - **Quelle est la réponse à la question de sécurité de John ? Comment l’avez-vous trouvé ?**
+
+Bravo! Vous avez terminé le TP! 
