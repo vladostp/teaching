@@ -41,7 +41,7 @@ Mais comme plusieurs vulnérabilités ne sont pas compatibles avec cette version
     export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
     ```
 - Accédez à l’application avec le navigateur Web **Firefox** depuis votre machine
-    - L’application doit être disponible sur http://ADR-IP-DE-LA-VM/
+    - L’application doit être disponible sur http://ADRESSE-IP-DE-LA-VM/
 
 Si l'application n'est pas accessible, assurez-vous que l'application a été lancée correctement et que le port **80** est ouvert.
 
@@ -115,9 +115,7 @@ Pour envoyer la requête au `Repeater`, faites un clic droit sur l'onglet affich
 ![Requête dans Repeater](./images/repeater.png)
 
 Cette fonctionnalité est extrêmement utile lorsque vous tentez de mener une attaque en modifiant la requête envoyée par le navigateur à l'application web.
-
 Elle vous permet d'envoyer plusieurs versions de requêtes et de voir comment l'application Web répond à requête directement dans Burp Suite, sans passer par le navigateur Web.
-
 Cette fonctionnalité vous permet d'ajuster votre attaque pour obtenir le résultat souhaité.
 
 Cliquez sur `Send` pour envoyer la requête et afficher la réponse de l'application Web dans Burp Suite.
@@ -154,18 +152,22 @@ Une fois l'attaque terminée, vous allez pouvoir analyser chaque requête et la 
 Explorez les différents types d'attaques disponibles sur `Intruder`.
 
 ## Time to hack
-Dans cette section, vous allez trouver et exploiter les vulnérabilités dans l’application Web `Juice Shop`. 
+Dans cette section, vous allez trouver et exploiter les vulnérabilités de l’application Web `Juice Shop`. 
+
 
 ### Échauffement - Trouvez le score board
 Dans cette partie, vous allez trouver le score board. 
-Le score board est une page Web qui contient une liste de tous les défis disponibles dans `Juice Shop` avec une brève description. Certaines descriptions sont des instructions très explicites.
+
+Le score board est une page Web qui contient une liste de tous les défis disponibles dans `Juice Shop` avec une brève description. 
+Certaines descriptions sont des instructions très explicites.
 D'autres ne sont que de vagues indices qui vous laissent le soin de déterminer ce qui doit être fait.
 
-Pour trouver le score board, vous allez procéder de manière entièrement manuelle, sans l’utilisation de `Burp Suite`.
+Pour trouver le score board, vous allez procéder de manière entièrement manuelle, sans utiliser `Burp Suite`.
 
 Désactivez l’utilisation du proxy `Burp Suite` dans `FoxyProxy` et trouvez le lien vers la page du score board. 
 
-Pour ce faire, vous pouvez: 
+Pour ce faire, plusieurs options s'offrent à vous. 
+Vous pouvez: 
 - Soit analyser le code source des pages de l'application Web affichées dans le navigateur Web (y compris les fichiers JavaScript) pour trouver le lien
 - Soit deviner le lien vers la page où le score board est caché
 
