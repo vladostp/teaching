@@ -318,6 +318,7 @@ Ces outils vous permettent de découvrir les fichiers et dossiers disponibles su
 Ils vous permettent de trouver différentes ressources cachées sur les serveurs Web, telles que des pages, des fichiers, des répertoires et des applications.
 
 Mais avant de commencer à effectuer des analyses massives qui peuvent être détectées par les systèmes de sécurité, vous devriez toujours essayer des choses plus simples.
+
 Vous pouvez commencer par analyser les fichiers de configuration qui sont souvent disponibles sur les serveurs Web et qui peuvent révéler des informations intéressantes. 
 
 Par exemple, le fichier de configuration des scanners des moteurs de recherche est souvent présent sur les serveurs Web et et peut révéler des ressources cachés disponibles sur le serveur Web.
@@ -335,10 +336,9 @@ Cette vulnérabilité est présente dans la fonctionnalité d'affichage du panie
 Comme dans les sections précédentes, vous allez commencer par analyser le fonctionnement de la visualisation du panier. 
 
 Pour ce faire:
-
 - Créez un compte, authentifiez-vous et ajoutez un article dans le panier
 - Activez l'utilization du Proxy `Burp Suite` et trouvez la requête REST qui récupère les articles du panier de l’utilisateur
-- Envoyez cette requête à `Repeater` et analysez le résultat
+- Envoyez cette requête à `Repeater`, puis à Juice Shop et analysez le résultat
     - Faites attention à l'en-tête HTTP `If-None-Match`
     - **Que fait cette en-tête ?**
 
