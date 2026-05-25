@@ -418,7 +418,7 @@ Pour voler les cookies, vous allez utiliser la technique vue dans la section pr�
 
 La différence par raport à la section précédente est que vous devez trouver un moyen de publier le code JavaScript qui sera stocké dans la base de données et qui sera exectué sur une page consultée par l'administrateur.
 
-**Indice**: L’adresse email saisie lors de la création de l’utilisateur est validée uniquement côté client et est affichée dans le panneau d'administration. Vous pouvez donc intercepter et modifier la requête de création d'utilisateur en utilisant `Burp Suite` et `Burp Suite Repeater` afin de créer un compte avec l'adresse email contenant du code JavaScript.
+**Indice**: L’adresse email saisie lors de la création de l’utilisateur est validée uniquement côté client et est affichée dans le panneau d'administration. Vous pouvez donc intercepter et modifier la requête de création d'utilisateur en utilisant `Repeater` afin de créer un compte avec l'adresse email contenant du code JavaScript.
 
 Pour vérifier que vous avez réussi à exploiter la vulnérabilité, vous pouvez :
 - Accéder au panneau d'administration en utilisant l'injection SQL vue précédemment pour vous authentifier en tant qu'administrateur et en utilisant l'URL `/#/administration`
