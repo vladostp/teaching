@@ -219,7 +219,7 @@ Pour commencer, vous devez d'abord comprendre comment fonctionne le mécanisme d
 
 Pour faire cela:
 - Créez un utilisateur et essayez de restaurer son mot de passe via la fonctionnalité de mot de passe oublié
-- Analysez les requêtes envoyées à l'application Web et les réponses récues avec `Burp Suite Repeater`
+- Analysez les requêtes envoyées à l'application Web et les réponses récues avec `Repeater`
 - **Que contient la réponse de l'application Web lorsque vous envoyez la demande de récupération de mot de passe avec la réponse à la question de sécurité correcte / incorrecte?**
 
 Un fois que vous avez compris comment fonctionne la récupération de mot de passe, vous pouvez essayer de l’exploiter. 
@@ -234,16 +234,18 @@ La question de sécurité de Jim peut également être facilement trouvée.
 
 Supposons que Jim ait effectivement répondu à cette question et que la réponse soit un prénom.
 Pour découvrir la réponse à sa question de sécurité, vous pouvez utiliser deux approches différentes:
-- **OSINT (Open-source intelligence)**: Analyser l’identité de Jim et essayer de trouver la réponse à partir des données publiquement disponibles sur Internet
-- **Dictionary Attack**: Trouver un dictionnaire avec tous les prénoms possibles et les essayer tous
+- **OSINT (Open-source intelligence)**: Analysez l'identité de Jim et essayez de trouver la réponse en utilisant les données publiques disponibles sur Internet
+- **Dictionary Attack**: Trouver un dictionnaire contenant tous les prénoms possibles et essayer-les tous
 
 OSINT est une ressource très puissante. 
 Vous ne pouvez même pas imaginer la quantité de données intéressantes que vous pouvez trouver en utilisant intelligemment des sources ouvertes.
+
 Si vous trouvez la bonne réponse dans des sources publiques, votre attaque est moins susceptible d’être détectée par l’application ciblée.
 Cette approche devrait donc être privilégiée. 
+
 Cependant, cela nécessite parfois beaucoup de travail de recherche et prend beaucoup de temps.
 
-Comme pour ce TP vous etes limités dans le temps, vous allez utiliser **Dictionary Attack** avec un dictionnaire restreint.
+Comme vous disposez d'un temps limité pour ce TP, vous allez utiliser **Dictionary Attack** avec un dictionnaire restreint.
 
 **wordlist-prenoms.txt**
 ```
@@ -261,24 +263,22 @@ Win
 Windowing
 ```
 
-Vous allez utiliser `Burp Suite Intruder` pour effectuer cette attaque. 
+Vous allez utiliser `Intruder` pour effectuer cette attaque. 
 
 Pour ce faire:
 - Interceptez la demande de récupération de mot de passe avec l'adresse mail de `Jim` et n'importe quelle réponse à la question de sécurité
 
 - Envoyez la requete au `Intruder` (clic droit et `Send to Intruder`) 
 
-- Dans l’onglet `Intruder` -> `Positions`, effacez tous les `markers` (bouton `Clear`) 
-
-- Créez un `marker` à la position de la réponse à la question de sécurité 
+- Dans l’onglet `Intruder` créez un `marker` à la position de la réponse à la question de sécurité 
     - Pour ce faire, sélectionnez le texte de la réponse à la question de sécurité et cliquez sur le bouton `Add`
 
-- Choisissez le type d'attaque `Sniper` 
+- Choisissez le type d'attaque `Sniper attack` 
 
 - Puis dans l’onglet `Payloads`, choisissez le type de payload `Simple List` 
 
-- Dans la section `Payload settings`, copiez la liste des prénoms donnée précédemment
-    - Pour allez plus vite, vous pouvez enregistrer la liste sous forme de fichier texte et utiliser le bouton `Load...` pour la charger à partir de ce fichier ou copier la liste et utiliser le bouton `Paste` 
+- Dans la section `Payload configuration`, copiez la liste des prénoms donnée précédemment
+    - Pour allez plus vite, vous pouvez copier la liste et utiliser le bouton `Paste`
 
 - Démarrez l’attaque avec le bouton `Start attack` et analysez soigneusement la taille et l'état de chaque réponse
     - Pour chaque réponse de sécurité essayée par `Intruder`, vous pouvez visualiser la requête envoyée et la réponse reçue de l’application Web
