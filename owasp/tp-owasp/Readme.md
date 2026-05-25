@@ -47,27 +47,21 @@ Si l'application n'est pas accessible, assurez-vous que l'application a été la
 
 ## Burp Suite
 Dans ce TP, vous n'utiliserez pas d'outils qui automatisent la découverte et l'exploitation des vulnérabilités. 
-
 Mais pour faciliter votre travail, vous allez utiliser un outil Proxy qui vous permettra d’intercepter, de modifier et de répéter les requêtes HTTP faites à l'application Web.
-
 Bien qu'il existe plusieurs outils Proxy, vous allez utiliser l’outil le plus moderne et le plus populaire, le *Burp Suite*. 
 
 Cet outil est utilisé par la majorité des Penesters et des Bug Hunters. 
 Par exemple, Thomas DeVoss (dawgyg), qui est l’un des premiers hackers au monde à avoir gagner 1 million de dollars grâce aux Bug Bounties, utilise uniquement *Burp Suite* et un outil de découverte d'assets dans son travail.
 
 *Burp Suite* est une application Java développée par PortSwigger Ltd, qui peut être utilisée pour sécuriser des applications Web ou pour effectuer des tests de pénétration sur des applications Web. 
-
 La suite se compose de différents outils comme un serveur proxy, robot d’indexation, un outil d'intrusion, un scanner de vulnérabilités et un répéteur HTTP.
 
 Burp Suite est disponible en deux éditions: Burp Suite Community Edition et Burp Suite Pro. 
-
 Dans ce TP, vous allez utiliser Burp Suite Community Edition qui est la version gratuite, fournie par défaut avec la distribution Kali Linux.
-
 La version Pro est doitée de fonctionnalités supplémentaires, telles que l'analyse automatique des vulnérabilités, ainsi qu'un plus grand nombre de threads utilisables pour les attaques et les requêtes.
 
 Pour faire simple, Burp Suite fonctionne comme un proxy. 
 Il se place entre votre navigateur Web et l'application Web testée, puis intercepte et analyse toutes les requêtes et les réponses échangées avec l'application Web. 
-
 Donc, pour utiliser Burp Suite, vous devez l’installer sur votre machine et l’utiliser comme proxy dans votre navigateur Web.
 
 ### Installation
@@ -80,12 +74,10 @@ Lancez Burp Suite en version Community avec un projet temporaire et la configura
 Dans cette section, vous allez configurer votre navigateur Web pour qu’il utilise Burp Suite comme serveur proxy.
 
 Pour pouvoir activer et désactiver le proxy rapidement, installez et configurez l'extension *FoxyProxy Standard* pour *Firefox*.
-
-- Verifiez dans Burp suite que le proxy est configuré pour intercepter les requêtes (onglet `Proxy` -> `Intercept is on`)
-
 - Ajoutez une entrée pour le proxy *Burp Suite* dans le *FoxyProxy* 
     - `Options` -> `Proxies` -> `Add` (Hostname `127.0.0.1` et Port `8080`) -> `Save`
 - Activez l'éntree du proxy Burp Suite créée précédemment dans le *FoxyProxy* en cliquant sur l'icône de l'extension et en sélectionnant l'entrée correspondante.
+- Verifiez dans Burp suite que le proxy est configuré pour intercepter les requêtes (onglet `Proxy` -> `Intercept is on`)
 
 ### Utilisation
 Essayez d'accéder à l'application Juice Shop précédemment lancée.
@@ -98,7 +90,8 @@ Dans cet onglet, vous verrez la liste des requêtes interceptées par Burp Suite
 
 ![Liste des requêtes interceptées par Burp Suite](./images/intercepted_req_list.png)
 
-Trouvez la requête envoyée par le navigateur Web à l'application Web Juice Shop qui a été interceptée par Burp Suite et analysez les détails de cette requête.
+Trouvez la requête envoyée par le navigateur Web à l'application Web Juice Shop interceptée par Burp Suite et sélectionnez-la.
+Les details de cette requête seront affichés dans l'onglet `Request`.
 
 ![Requête intercepté avec Burp Suite](./images/juiceshop_request.png)
 
@@ -108,10 +101,9 @@ Si vous cliquez sur `Forward`, la requête sera envoyée et traitée par l’app
 La reponse de l'application Web sera reçue directement dans le navigateur Web. 
 
 Pour afficher la page de l'application Juice Shop, votre navigateur doit effectuer plusieurs requêtes auprès de l'application web et recevoir plusieurs réponses.
-
 Vous devez donc cliquer plusieurs fois sur `Forward`, pour voir la page de l'application Web dans le navigateur.
 
-- **Astuce!** Vous pouvez désactiver temporairement l'interception des requêtes dans Burp Suite pour utiliser l'application web, puis la réactiver pour intercepter et analyser les requêtes. Pour ce faire, utilisez le bouton `Intercept on`/`Intercept off` dans onglet `Proxy`. Lorsque vous désactivez l'interception dans Burp Suite, toutes les requêtes figurant dans la liste des requêtes interceptées seront envoyées.
+**Astuce!** Vous pouvez désactiver temporairement l'interception des requêtes dans Burp Suite pour utiliser l'application web, puis la réactiver pour intercepter et analyser les requêtes. Pour ce faire, utilisez le bouton `Intercept on`/`Intercept off` dans onglet `Proxy`. Lorsque vous désactivez l'interception dans Burp Suite, toutes les requêtes figurant dans la liste des requêtes interceptées seront envoyées.
 
 #### Repeater
 Vous avez également la possibilité d’envoyer la requête au `Repeater`. 
