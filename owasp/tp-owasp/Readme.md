@@ -156,7 +156,7 @@ Dans cette section, vous allez trouver et exploiter les vulnérabilités de l’
 
 
 ### Échauffement - Trouvez le score board
-Dans cette partie, vous allez trouver le score board. 
+Dans cette partie, vous trouverez le score board. 
 
 Le score board est une page Web qui contient une liste de tous les défis disponibles dans `Juice Shop` avec une brève description. 
 Certaines descriptions sont des instructions très explicites.
@@ -175,36 +175,40 @@ Vous pouvez:
 
 
 ### Injection - Devenir administrateur
-Dans cette partie, vous allez exploiter une injection SQL pour vous connecter en tant qu'administrateur.
+Dans cette section, vous allez effectuer une injection SQL pour vous connecter en tant qu'administrateur.
 
-Le mécanisme d’authentification présente une vulnérabilité permettant une injection SQL que vous aller exploiter.
+Le mécanisme d’authentification de Juice Shop présente une vulnérabilité permettant les injections SQL, que vous aller exploiter.
 
-Afin de pouvoir détecter et exploiter cette vulnérabilité, vous allez utiliser le `Burp Suite`.
+Pour détecter et exploiter cette vulnérabilité, vous allez utiliser le `Burp Suite`.
 
 Pour ce faire:
-- Activez l’utilisation du proxy `Burp Suite` dans `FoxyProxy` et assurez-vous que `Intercept is on` dans l'onglet `Proxy` du `Burp Suite`
+- Activez l’utilisation du proxy `Burp Suite` dans `FoxyProxy` et assurez-vous que `Intercept on` dans l'onglet `Proxy` -> `Intercept`.
 
 - Interceptez la requête qui envoie les valeurs saisies dans le formulaire d'authentification à l'application Web
+  - Pour ce faire, essayez de vous authentifier avec n'importe quel identifiant
+  - La requête qui nous intéresse doit contenir les identifiants saisis
 
-- Lorsque vous avez intercepté cette requête, envoyez-la au `Burp Suite Repeater` avec clique droit `Send to Repeater`
-    - `Burp Suite Repeater (onglet Repeater)` vous permettra de modifier la requête pour essayer une entrée différente et de visualiser directement la réponse de l’application Web
+- Lorsque vous avez intercepté cette requête, envoyez-la au `Repeater` avec clique droit `Send to Repeater`
+    - `Repeater` vous permettra de modifier la requête pour essayer une entrée différente et de visualiser directement la réponse de l’application Web
+    - Allez dans l'onglet `Repeater`
+    - Pour envoyer la requête à l'application web, cliquez sur `Send`
 
-- Essayez de provoquer une erreur sur la page d’authentification en essayant différentes entrées de formulaire et en surveillant les réponses de l'application Web
-    - **Comment avez-vous provoqué l’erreur en utilisant le formulaire d’authentification ?**
-    - **Quelles données intéressantes sont divulguées par le serveur dans le message d’erreur ?**
+Essayez de provoquer une erreur sur la page d’authentification en essayant des entrées différentes pour `email` et `password` et en analyzant les réponses de l'application Web
+- **Comment avez-vous provoqué l’erreur en utilisant le formulaire d’authentification ?**
+- **Quelles données intéressantes sont divulguées par le serveur dans le message d’erreur ?**
 
-- Trouvez une injection qui permet de vous connecter avec le compte administrateur
-    - Le compte administrateur est la première entrée de la base de données
-    - **Quelle injection avez-vous utilisé pour vous connecter avec le compte administrateur ?**
+Trouvez une injection qui permet de vous connecter avec le compte administrateur
+- Le compte administrateur est la première entrée de la base de données
+- **Quelle injection avez-vous utilisé pour vous connecter avec le compte administrateur ?**
 
-- Une fois que vous avez découvert comment exploiter le formulaire de connexion avec `Burp Suite`, désactivez le proxy et authentifiez-vous sur l'application Web via votre navigateur Web en fournissant le contenu d'injection directement dans le fomulaire
-    - **Combien de produits y a-t-il dans le panier de l'administrateur ?**
+Une fois que vous avez découvert comment exploiter le formulaire de connexion avec `Burp Suite`, désactivez le proxy et authentifiez-vous sur l'application Web via votre navigateur Web en fournissant le contenu d'injection directement dans le fomulaire
+- **Combien de produits y a-t-il dans le panier de l'administrateur ?**
 
 Dans cette partie, vous avez également rencontré une vulnérabilité de type **Security Misconfiguration**. 
-Vous avez provoqué une erreur qui a révélé la requête SQL utilisée par l'application Web et vous a facilité la construction de l'injection SQL.
-Cela représente une mauvaise configuration de la sécurité de l’application Web. 
-Normalement, l'application doit être configurée pour ne jamais afficher d'informations sensibles dans les messages d'erreur.
 
+Vous avez provoqué une erreur qui a exposé la requête SQL utilisée par l'application Web, facilitant ainsi la mise en œuvre d'une attaque par injection SQL.
+Ceci représente une mauvaise configuration de la sécurité de l’application Web. 
+Normalement, l'application devrait être configurée pour ne jamais afficher d'informations sensibles dans les messages d'erreur.
 
 ### Insecure Design - Voler l'identité de Jim
 Dans cette partie, vous allez exploiter un mauvais mécanisme de récupération de mot de passe. 
