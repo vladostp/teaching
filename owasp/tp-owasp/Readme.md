@@ -295,12 +295,13 @@ Vous allez utiliser cette vulnérabilité pour lire le fichier `/etc/passwd` du 
 
 Un exemple d’exploitation de cette vulnérabilité a été vu pendant le CM. 
 Cet exemple fonctionne également pour le `Juice Shop`.
+Vous pouvez donc récupérer le contenu du fichier XML depuis le CM et l'utiliser pour l'attaque.
 
 Tout d'abord, vous devez trouver une page avec un formulaire qui vous permet d'uploader des fichiers XML et essayer de l'exploiter.
 - Ne cherchez pas trop loin, cette page est accessible depuis la page d'accueil en étant connecté avec n'importe quel utilisateur
 - **Quelle page contient le formulaire qui vous permet d'uploader des fichers XML ?**
 
-Utilisez le `Burp Suite Repeater` pour visualiser les requêtes et les réponses de l’application Web lors du upload du fichier XML via le formulaire trouvé précédemment.
+Utilisez le `Repeater` pour visualiser les requêtes et les réponses de l’application Web lors du upload du fichier XML via le formulaire trouvé précédemment.
 - **Avez-vous réussi à exploiter cette vulnérabilité ?**
 - **Quel fichier avez-vous envoyé à l'application Web ?**
 - **Quel message d’erreur accompagne le contenu du fichier `/etc/passwd` ?**
