@@ -166,7 +166,7 @@ Pour trouver le score board, vous allez procéder de manière entièrement manue
 
 Désactivez l’utilisation du proxy `Burp Suite` dans `FoxyProxy` et trouvez le lien vers la page du score board. 
 
-Pour ce faire, plusieurs options s'offrent àexport NODE_ENV=quiet && export PORT=80 && sudo -E npm start vous. 
+Pour ce faire, plusieurs options s'offrent à vous. 
 Vous pouvez: 
 - Soit analyser le code source des pages de l'application Web affichées dans le navigateur Web (y compris les fichiers JavaScript) pour trouver le lien
 - Soit deviner le lien vers la page où le score board est caché
@@ -188,7 +188,7 @@ Pour ce faire:
   - Pour ce faire, essayez de vous authentifier avec n'importe quel identifiant
   - La requête qui nous intéresse doit contenir les identifiants saisis
 
-- Lorsque vous avez intercepté cette requête, envoyez-la au `Repeater` avec clique droit `Send to Repeater`export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
+- Lorsque vous avez intercepté cette requête, envoyez-la au `Repeater` avec clique droit `Send to Repeater`
     - `Repeater` vous permettra de modifier la requête pour essayer une entrée différente et de visualiser directement la réponse de l’application Web
     - Allez dans l'onglet `Repeater`
     - Pour envoyer la requête à l'application web, cliquez sur `Send`
@@ -212,7 +212,6 @@ Normalement, l'application devrait être configurée pour ne jamais afficher d'i
 
 ### Insecure Design - Voler l'identité de Jim
 Dans cette partie, vous allez exploiter un mauvais mécanisme de récupération de mot de passe. 
-export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
 Vous allez exploiter cette vulnérabilité pour changer le mot de passe de l’utilisateur Jim et voler son identité.
 
 Pour commencer, vous devez d'abord comprendre comment fonctionne le mécanisme de récupération de mot de passe dans l'application Web.
@@ -296,7 +295,7 @@ Vous allez utiliser cette vulnérabilité pour lire le fichier `/etc/passwd` du 
 Un exemple d’exploitation de cette vulnérabilité a été vu pendant le CM. 
 Cet exemple fonctionne également pour le `Juice Shop`.
 Vous pouvez donc récupérer le contenu du fichier XML depuis le CM et l'utiliser pour l'attaque.
-export NODE_ENV=quiet && export PORT=80 && sudo -E npm start
+
 Tout d'abord, vous devez trouver une page avec un formulaire qui vous permet d'uploader des fichiers XML et essayer de l'exploiter.
 - Ne cherchez pas trop loin, cette page est accessible depuis la page d'accueil en étant connecté avec n'importe quel utilisateur
 - **Quelle page contient le formulaire qui vous permet d'uploader des fichers XML ?**
